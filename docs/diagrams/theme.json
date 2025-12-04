@@ -1,0 +1,23 @@
+{
+    "wireframe_style": "classic",
+    "colors": {
+        "background": "#ffffff",
+        "container": "#f5f5f5",
+        "border": "#9e9e9e",
+        "text": "#424242",
+        "accent": "#2196F3",
+        "success": "#4CAF50",
+        "warning": "#FF9800",
+        "error": "#f44336"
+    },
+    "typography": {
+        "heading": "16px, bold, #424242",
+        "body": "14px, regular, #424242",
+        "label": "12px, regular, #9e9e9e"
+    },
+    "spacing": {
+        "padding": "16px",
+        "margin": "12px",
+        "gutter": "24px"
+    }
+}
