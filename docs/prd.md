@@ -1,8 +1,8 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 inputDocuments: ["docs/analysis/product-brief-vox-2025-12-03.md", "docs/analysis/research/market-vox-reputation-platform-research-2025-12-04.md", "docs/analysis/brainstorming-session-2025-12-03.md"]
 workflowType: 'prd'
-lastStep: 10
+lastStep: 11
 project_name: 'vox'
 user_name: 'Riddler'
 date: '2025-12-04'
@@ -337,3 +337,27 @@ Vox is a web application built as a Multi-Page Application (MPA) to support SEO 
 - Keyboard navigation must be supported for all interactive elements
 - Screen reader compatibility required for primary user journeys
 - Color contrast ratios must meet accessibility standards
+
+## Next Steps
+
+**Immediate Next Steps:**
+
+1. `workflow create-ux-design` - UX Design (if UI exists)
+   - User journey insights from step-04 will inform interaction design
+   - Functional requirements from step-09 define design scope
+
+2. `workflow create-architecture` - Technical architecture
+   - Project-type requirements from step-07 guide technical decisions
+   - Non-functional requirements from step-10 inform architecture choices
+
+3. `workflow create-epics-and-stories` - Epic breakdown
+   - Functional requirements from step-09 become epics and stories
+   - Scope definition from step-03 guides sprint planning
+
+**Strategic Considerations:**
+
+- UX design and architecture can happen in parallel
+- Epics/stories are richer when created after UX/architecture
+- Consider your team's capacity and priorities
+
+**What would be most valuable to tackle next?**
