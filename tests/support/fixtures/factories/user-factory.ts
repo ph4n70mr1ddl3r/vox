@@ -128,16 +128,36 @@ export class UserFactory {
      * Cleanup: Delete all users created during the test
      * Called automatically by fixture after test completion
      */
-    async cleanup(): Promise<void> {
-        const deletePromises = this.createdUserIds.map(async (userId) => {
-            try {
-                await this.request.delete(`${this.baseURL}/users/${userId}`);
-            } catch (error) {
-                console.warn(`Failed to delete user ${userId}:`, error);
+    async cleanup(): Promise<{ deleted: number; failed: number; errors: Array<{ id: string; error: string }> }> {
+        const results = await Promise.allSettled(
+            this.createdUserIds.map(async (userId) => {
+                const response = await this.request.delete(`${this.baseURL}/users/${userId}`);
+                if (!response.ok()) {
+                    throw new Error(`Failed to delete user ${userId}: ${response.status()} ${await response.text()}`);
+                }
+                return userId;
+            })
+        );
+
+        const deleted: string[] = [];
+        const failed: Array<{ id: string; error: string }> = [];
+
+        results.forEach((result, index) => {
+            const userId = this.createdUserIds[index];
+            if (result.status === 'fulfilled') {
+                deleted.push(userId);
+            } else {
+                failed.push({ id: userId, error: result.reason.message });
+                console.warn(`Failed to delete user ${userId}:`, result.reason);
             }
         });
 
-        await Promise.all(deletePromises);
         this.createdUserIds = [];
+
+        if (failed.length > 0) {
+            console.warn(`UserFactory cleanup: ${deleted.length} deleted, ${failed.length} failed`);
+        }
+
+        return { deleted: deleted.length, failed: failed.length, errors: failed };
     }
 }

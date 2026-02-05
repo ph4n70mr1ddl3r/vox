@@ -13,7 +13,6 @@ test.describe('Trust Graph Network', () => {
     test('should create trust connection and update reputation scores', async ({
         page,
         userFactory,
-        trustConnectionFactory,
         defaultPassword,
     }) => {
         // Create two test users

@@ -1,5 +1,4 @@
 import { APIRequestContext } from '@playwright/test';
-import { User } from './user-factory';
 import { DEFAULT_API_URL, DEFAULT_TRUST_LEVEL, NETWORK_TRUST_LEVEL, CONNECTION_STATUSES } from '../constants';
 
 /**
@@ -83,26 +82,36 @@ export class TrustConnectionFactory {
      * Accept a pending trust connection
      */
     async acceptConnection(connectionId: string): Promise<TrustConnection> {
-        const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/accept`, {});
+        try {
+            const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/accept`, {});
 
-        if (!response.ok()) {
-            throw new Error(`Failed to accept connection: ${response.status()}`);
+            if (!response.ok()) {
+                throw new Error(`Failed to accept connection: ${response.status()} ${await response.text()}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('TrustConnectionFactory.acceptConnection failed:', error);
+            throw error;
         }
-
-        return response.json();
     }
 
     /**
      * Reject a pending trust connection
      */
     async rejectConnection(connectionId: string): Promise<TrustConnection> {
-        const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/reject`, {});
+        try {
+            const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/reject`, {});
 
-        if (!response.ok()) {
-            throw new Error(`Failed to reject connection: ${response.status()}`);
+            if (!response.ok()) {
+                throw new Error(`Failed to reject connection: ${response.status()} ${await response.text()}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('TrustConnectionFactory.rejectConnection failed:', error);
+            throw error;
         }
-
-        return response.json();
     }
 
     /**
@@ -116,18 +125,17 @@ export class TrustConnectionFactory {
      * );
      */
     async createNetwork(centerUserId: string, connectedUserIds: string[]): Promise<TrustConnection[]> {
-        const connectionPromises = connectedUserIds.map(async (userId) => {
-            const connection = await this.createConnection({
-                fromUserId: centerUserId,
-                toUserId: userId,
-                trustLevel: NETWORK_TRUST_LEVEL,
-            });
+        const connections = await Promise.all(
+            connectedUserIds.map((userId) =>
+                this.createConnection({
+                    fromUserId: centerUserId,
+                    toUserId: userId,
+                    trustLevel: NETWORK_TRUST_LEVEL,
+                })
+            )
+        );
 
-            await this.acceptConnection(connection.id);
-            return connection;
-        });
-
-        return Promise.all(connectionPromises);
+        return Promise.all(connections.map((connection) => this.acceptConnection(connection.id)));
     }
 
     /**
@@ -141,16 +149,15 @@ export class TrustConnectionFactory {
      */
     async createChain(userIds: string[]): Promise<TrustConnection[]> {
         const connectionPromises = [];
+
         for (let i = 0; i < userIds.length - 1; i++) {
-            const connectionPromise = this.createConnection({
+            const connection = await this.createConnection({
                 fromUserId: userIds[i],
                 toUserId: userIds[i + 1],
                 trustLevel: DEFAULT_TRUST_LEVEL,
-            }).then(async (connection) => {
-                await this.acceptConnection(connection.id);
-                return connection;
             });
-            connectionPromises.push(connectionPromise);
+
+            connectionPromises.push(this.acceptConnection(connection.id));
         }
 
         return Promise.all(connectionPromises);
@@ -160,16 +167,36 @@ export class TrustConnectionFactory {
      * Cleanup: Delete all trust connections created during the test
      * Called automatically by fixture after test completion
      */
-    async cleanup(): Promise<void> {
-        const deletePromises = this.createdConnectionIds.map(async (connectionId) => {
-            try {
-                await this.request.delete(`${this.baseURL}/trust-connections/${connectionId}`);
-            } catch (error) {
-                console.warn(`Failed to delete trust connection ${connectionId}:`, error);
+    async cleanup(): Promise<{ deleted: number; failed: number; errors: Array<{ id: string; error: string }> }> {
+        const results = await Promise.allSettled(
+            this.createdConnectionIds.map(async (connectionId) => {
+                const response = await this.request.delete(`${this.baseURL}/trust-connections/${connectionId}`);
+                if (!response.ok()) {
+                    throw new Error(`Failed to delete trust connection ${connectionId}: ${response.status()} ${await response.text()}`);
+                }
+                return connectionId;
+            })
+        );
+
+        const deleted: string[] = [];
+        const failed: Array<{ id: string; error: string }> = [];
+
+        results.forEach((result, index) => {
+            const connectionId = this.createdConnectionIds[index];
+            if (result.status === 'fulfilled') {
+                deleted.push(connectionId);
+            } else {
+                failed.push({ id: connectionId, error: result.reason.message });
+                console.warn(`Failed to delete trust connection ${connectionId}:`, result.reason);
             }
         });
 
-        await Promise.all(deletePromises);
         this.createdConnectionIds = [];
+
+        if (failed.length > 0) {
+            console.warn(`TrustConnectionFactory cleanup: ${deleted.length} deleted, ${failed.length} failed`);
+        }
+
+        return { deleted: deleted.length, failed: failed.length, errors: failed };
     }
 }

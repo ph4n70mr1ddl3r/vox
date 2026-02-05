@@ -11,7 +11,7 @@ import { DEFAULT_BUDGET } from '../support/fixtures/constants';
  */
 
 test.describe('Marketplace Campaigns', () => {
-    test('should create a new campaign as a brand', async ({ page, userFactory, campaignFactory, defaultPassword }) => {
+    test('should create a new campaign as a brand', async ({ page, userFactory, defaultPassword }) => {
         // Create brand user
         const brand = await userFactory.createBrand({
             name: 'Fashion Brand',

@@ -1,7 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { User } from './user-factory';
-import { DEFAULT_API_URL, DEFAULT_BUDGET, DEFAULT_MIN_REPUTATION_SCORE, DEFAULT_MAX_INFLUENCERS, CAMPAIGN_CATEGORIES, CAMPAIGN_STATUSES, CAMPAIGN_DEFAULT_DURATION_DAYS } from '../constants';
+import { DEFAULT_API_URL, DEFAULT_MIN_REPUTATION_SCORE, DEFAULT_MAX_INFLUENCERS, CAMPAIGN_CATEGORIES, CAMPAIGN_STATUSES, CAMPAIGN_DEFAULT_DURATION_DAYS } from '../constants';
 
 /**
  * Campaign Factory for vox marketplace testing
@@ -106,31 +105,56 @@ export class CampaignFactory {
      * Update campaign status
      */
     async updateStatus(campaignId: string, status: Campaign['status']): Promise<Campaign> {
-        const response = await this.request.patch(`${this.baseURL}/campaigns/${campaignId}`, {
-            data: { status },
-        });
+        try {
+            const response = await this.request.patch(`${this.baseURL}/campaigns/${campaignId}`, {
+                data: { status },
+            });
 
-        if (!response.ok()) {
-            throw new Error(`Failed to update campaign status: ${response.status()}`);
+            if (!response.ok()) {
+                throw new Error(`Failed to update campaign status: ${response.status()} ${await response.text()}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('CampaignFactory.updateStatus failed:', error);
+            throw error;
         }
-
-        return response.json();
     }
 
     /**
      * Cleanup: Delete all campaigns created during the test
      * Called automatically by fixture after test completion
      */
-    async cleanup(): Promise<void> {
-        const deletePromises = this.createdCampaignIds.map(async (campaignId) => {
-            try {
-                await this.request.delete(`${this.baseURL}/campaigns/${campaignId}`);
-            } catch (error) {
-                console.warn(`Failed to delete campaign ${campaignId}:`, error);
+    async cleanup(): Promise<{ deleted: number; failed: number; errors: Array<{ id: string; error: string }> }> {
+        const results = await Promise.allSettled(
+            this.createdCampaignIds.map(async (campaignId) => {
+                const response = await this.request.delete(`${this.baseURL}/campaigns/${campaignId}`);
+                if (!response.ok()) {
+                    throw new Error(`Failed to delete campaign ${campaignId}: ${response.status()} ${await response.text()}`);
+                }
+                return campaignId;
+            })
+        );
+
+        const deleted: string[] = [];
+        const failed: Array<{ id: string; error: string }> = [];
+
+        results.forEach((result, index) => {
+            const campaignId = this.createdCampaignIds[index];
+            if (result.status === 'fulfilled') {
+                deleted.push(campaignId);
+            } else {
+                failed.push({ id: campaignId, error: result.reason.message });
+                console.warn(`Failed to delete campaign ${campaignId}:`, result.reason);
             }
         });
 
-        await Promise.all(deletePromises);
         this.createdCampaignIds = [];
+
+        if (failed.length > 0) {
+            console.warn(`CampaignFactory cleanup: ${deleted.length} deleted, ${failed.length} failed`);
+        }
+
+        return { deleted: deleted.length, failed: failed.length, errors: failed };
     }
 }
