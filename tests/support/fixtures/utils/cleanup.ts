@@ -1,15 +1,31 @@
+/**
+ * Result of a cleanup operation
+ */
 export interface CleanupResult<T = string> {
     deleted: number;
     failed: number;
     errors: Array<{ id: T; error: string }>;
 }
 
+/**
+ * Clean up resources by calling delete function for each ID
+ * 
+ * @param resourceIds - Array of resource IDs to delete
+ * @param deleteFn - Async function to delete a single resource
+ * @param resourceType - Type name for logging purposes
+ * @param timeoutMs - Timeout for each delete operation
+ * @returns CleanupResult with counts of successful/failed deletions
+ */
 export async function cleanupResources<T>(
     resourceIds: T[],
     deleteFn: (id: T) => Promise<void>,
     resourceType: string,
     timeoutMs: number = 30000
 ): Promise<CleanupResult<T>> {
+    if (resourceIds.length === 0) {
+        return { deleted: 0, failed: 0, errors: [] };
+    }
+
     const results = await Promise.allSettled(
         resourceIds.map(async (id) => {
             const timeoutPromise = new Promise<never>((_, reject) =>

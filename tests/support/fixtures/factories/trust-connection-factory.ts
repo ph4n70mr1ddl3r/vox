@@ -49,6 +49,18 @@ export class TrustConnectionFactory extends BaseFactory {
      * });
      */
     async createConnection(options: CreateConnectionOptions): Promise<TrustConnection> {
+        if (!options.fromUserId) {
+            throw new Error('fromUserId is required to create a trust connection');
+        }
+
+        if (!options.toUserId) {
+            throw new Error('toUserId is required to create a trust connection');
+        }
+
+        if (options.fromUserId === options.toUserId) {
+            throw new Error('Cannot create a trust connection to the same user');
+        }
+
         const trustLevel = options.trustLevel ?? DEFAULT_TRUST_LEVEL;
 
         if (trustLevel < 1 || trustLevel > 100) {

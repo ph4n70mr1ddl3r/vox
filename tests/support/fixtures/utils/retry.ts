@@ -1,6 +1,9 @@
 const DEFAULT_RETRIES = 2;
 const RETRYABLE_ERRORS = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND'];
 
+/**
+ * Check if an error is retryable based on its message
+ */
 function isRetryableError(error: unknown): boolean {
     if (error instanceof Error) {
         return RETRYABLE_ERRORS.some(code => error.message.includes(code));
@@ -8,6 +11,15 @@ function isRetryableError(error: unknown): boolean {
     return false;
 }
 
+/**
+ * Retry an async operation with exponential backoff
+ * 
+ * @param operation - The async function to retry
+ * @param context - Description of the operation for error messages
+ * @param maxRetries - Maximum number of retry attempts
+ * @returns Promise that resolves when operation succeeds
+ * @throws Error if operation fails after all retries
+ */
 export async function withRetry<T>(
     operation: () => Promise<T>,
     context: string,

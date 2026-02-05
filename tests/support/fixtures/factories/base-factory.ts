@@ -13,10 +13,16 @@ export abstract class BaseFactory {
         this.baseURL = process.env.API_URL || DEFAULT_API_URL;
     }
 
+    /**
+     * Track a created resource ID for cleanup
+     */
     protected trackId(id: string): void {
         this.createdIds.push(id);
     }
 
+    /**
+     * Make an HTTP request with automatic retry
+     */
     protected async makeRequest<T>(
         method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT',
         url: string,
@@ -40,6 +46,9 @@ export abstract class BaseFactory {
         }, `${context} (${method} ${url})`);
     }
 
+    /**
+     * Clean up all tracked resources
+     */
     async cleanup(resourceType: string, displayName?: string, timeoutMs: number = 30000): Promise<CleanupResult<string>> {
         const result = await cleanupResources(
             this.createdIds,

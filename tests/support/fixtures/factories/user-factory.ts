@@ -70,6 +70,16 @@ export class UserFactory extends BaseFactory {
             socialAccounts: options.socialAccounts || {},
         };
 
+        if (!userData.email || !userData.email.includes('@')) {
+            throw new Error(`Invalid email address: ${userData.email}`);
+        }
+
+        if (userData.reputationScore < 0 || userData.reputationScore > 100) {
+            throw new Error(`Reputation score must be between 0 and 100, got ${userData.reputationScore}`);
+        }
+
+        let user: User;
+
         try {
             const response = await this.request.post(`${this.baseURL}/users`, {
                 data: userData,
@@ -80,7 +90,7 @@ export class UserFactory extends BaseFactory {
                 throw new Error(`Failed to create user ${userData.email}: ${response.status()} ${errorText}`);
             }
 
-            const user = await response.json();
+            user = await response.json();
             this.trackId(user.id);
 
             const loginResponse = await this.request.post(`${this.baseURL}/auth/login`, {
@@ -126,8 +136,8 @@ export class UserFactory extends BaseFactory {
     }
 
     async createUsers(count: number, options: CreateUserOptions = {}): Promise<User[]> {
-        if (count <= 0) {
-            throw new Error(`User count must be positive, got ${count}`);
+        if (!Number.isInteger(count) || count <= 0) {
+            throw new Error(`User count must be a positive integer, got ${count}`);
         }
 
         return Promise.all(Array.from({ length: count }, () => this.createUser(options)));

@@ -62,10 +62,19 @@ export class CampaignFactory extends BaseFactory {
      * });
      */
     async createCampaign(options: CreateCampaignOptions): Promise<Campaign> {
+        if (!options.brandId) {
+            throw new Error('brandId is required to create a campaign');
+        }
+
         const budget = options.budget ?? faker.number.int({ min: 1000, max: 50000 });
 
         if (budget < 0) {
             throw new Error(`Budget must be non-negative, got ${budget}`);
+        }
+
+        const minReputationScore = options.minReputationScore ?? DEFAULT_MIN_REPUTATION_SCORE;
+        if (minReputationScore < 0 || minReputationScore > 100) {
+            throw new Error(`minReputationScore must be between 0 and 100, got ${minReputationScore}`);
         }
 
         const campaignData = {
@@ -75,7 +84,7 @@ export class CampaignFactory extends BaseFactory {
             budget,
             category: options.category || faker.helpers.arrayElement(CAMPAIGN_CATEGORIES),
             niches: options.niches || [faker.word.adjective(), faker.word.noun()],
-            minReputationScore: options.minReputationScore ?? DEFAULT_MIN_REPUTATION_SCORE,
+            minReputationScore,
             maxInfluencers: options.maxInfluencers ?? DEFAULT_MAX_INFLUENCERS,
             startDate: options.startDate || new Date(),
             endDate: options.endDate || new Date(Date.now() + CAMPAIGN_DEFAULT_DURATION_DAYS * 24 * 60 * 60 * 1000),
@@ -104,6 +113,10 @@ export class CampaignFactory extends BaseFactory {
     }
 
     async createCampaigns(count: number, options: CreateCampaignOptions): Promise<Campaign[]> {
+        if (!Number.isInteger(count) || count <= 0) {
+            throw new Error(`Campaign count must be a positive integer, got ${count}`);
+        }
+
         const results = await Promise.allSettled(
             Array.from({ length: count }, () => this.createCampaign(options))
         );

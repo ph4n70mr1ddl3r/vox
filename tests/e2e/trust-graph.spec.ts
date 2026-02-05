@@ -9,7 +9,14 @@ import { test, expect } from '../support/fixtures';
  * - Reputation score updates
  */
 
+/**
+ * Fetch user data by ID for verification in tests
+ */
 async function fetchUser(userId: string, accessToken: string | undefined): Promise<{ reputationScore: number }> {
+    if (!accessToken) {
+        throw new Error('Access token is required to fetch user data');
+    }
+
     const response = await fetch(`${process.env.API_URL || 'http://localhost:3000/api'}/users/${userId}`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
     });
