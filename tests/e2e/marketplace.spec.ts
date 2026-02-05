@@ -12,22 +12,18 @@ import { DEFAULT_BUDGET } from '../support/fixtures/constants';
 
 test.describe('Marketplace Campaigns', () => {
     test('should create a new campaign as a brand', async ({ page, userFactory, defaultPassword }) => {
-        // Create brand user
         const brand = await userFactory.createBrand({
             name: 'Fashion Brand',
             reputationScore: 75,
         });
 
-        // Login as brand
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', brand.email);
         await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
-        // Navigate to campaign creation
         await page.goto('/campaigns/create');
 
-        // Fill campaign form
         await page.fill('[data-testid="campaign-title"]', 'Summer Fashion Collection');
         await page.fill('[data-testid="campaign-description"]', 'Promoting our summer collection');
         await page.fill('[data-testid="campaign-budget"]', String(DEFAULT_BUDGET));
@@ -35,14 +31,11 @@ test.describe('Marketplace Campaigns', () => {
         await page.fill('[data-testid="min-reputation-score"]', '70');
         await page.fill('[data-testid="max-influencers"]', '10');
 
-        // Submit campaign
         await page.click('[data-testid="submit-campaign"]');
 
-        // Assert campaign created
         await expect(page.locator('[data-testid="success-message"]')).toBeVisible();
         await expect(page.locator('[data-testid="success-message"]')).toContainText('Campaign created');
 
-        // Verify redirect to campaign page
         await expect(page).toHaveURL(/\/campaigns\/[a-z0-9-]+/);
         await expect(page.locator('[data-testid="campaign-title"]')).toHaveText('Summer Fashion Collection');
     });
@@ -53,7 +46,6 @@ test.describe('Marketplace Campaigns', () => {
         campaignFactory,
         defaultPassword,
     }) => {
-        // Create brand and campaigns with different reputation requirements
         const brand = await userFactory.createBrand();
 
         const lowRepCampaign = await campaignFactory.createCampaign({
@@ -68,24 +60,19 @@ test.describe('Marketplace Campaigns', () => {
             minReputationScore: 80,
         });
 
-        // Create influencer with medium reputation
         const influencer = await userFactory.createInfluencer({
             reputationScore: 60,
         });
 
-        // Login as influencer
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', influencer.email);
         await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
-        // Browse marketplace
         await page.goto('/marketplace');
 
-        // Should see low rep campaign (60 > 40)
         await expect(page.locator(`[data-testid="campaign-${lowRepCampaign.id}"]`)).toBeVisible();
 
-        // Should NOT see high rep campaign (60 < 80)
         await expect(page.locator(`[data-testid="campaign-${highRepCampaign.id}"]`)).not.toBeVisible();
     });
 
@@ -95,7 +82,6 @@ test.describe('Marketplace Campaigns', () => {
         campaignFactory,
         defaultPassword,
     }) => {
-        // Setup campaign
         const brand = await userFactory.createBrand();
         const campaign = await campaignFactory.createCampaign({
             brandId: brand.id,
@@ -103,27 +89,22 @@ test.describe('Marketplace Campaigns', () => {
             minReputationScore: 50,
         });
 
-        // Create qualified influencer
         const influencer = await userFactory.createInfluencer({
             reputationScore: 75,
         });
 
-        // Login as influencer
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', influencer.email);
         await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
-        // View campaign
         await page.goto(`/campaigns/${campaign.id}`);
 
-        // Send collaboration request
         await page.click('[data-testid="request-collaboration"]');
         await page.fill('[data-testid="collaboration-message"]', 'I would love to collaborate!');
         await page.fill('[data-testid="proposed-rate"]', '1500');
         await page.click('[data-testid="submit-collaboration-request"]');
 
-        // Assert request sent
         await expect(page.locator('[data-testid="success-message"]')).toBeVisible();
         await expect(page.locator('[data-testid="collaboration-status"]')).toHaveText('Pending');
     });

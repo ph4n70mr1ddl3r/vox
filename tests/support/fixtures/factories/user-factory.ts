@@ -1,6 +1,7 @@
 import { APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { DEFAULT_PASSWORD, DEFAULT_API_URL, DEFAULT_REPUTATION_SCORE, USER_ROLES } from '../constants';
+import { cleanupResources, type CleanupResult } from '../utils/cleanup';
 
 /**
  * User Factory for vox platform testing
@@ -79,7 +80,8 @@ export class UserFactory {
             });
 
             if (!response.ok()) {
-                throw new Error(`Failed to create user: ${response.status()} ${await response.text()}`);
+                const errorText = await response.text();
+                throw new Error(`Failed to create user ${userData.email}: ${response.status()} ${errorText}`);
             }
 
             const user = await response.json();
@@ -89,12 +91,19 @@ export class UserFactory {
                 data: { email: userData.email, password },
             });
 
+            if (!loginResponse.ok()) {
+                const errorText = await loginResponse.text();
+                throw new Error(`Failed to login user ${userData.email}: ${loginResponse.status()} ${errorText}`);
+            }
+
             const authData = await loginResponse.json();
             user.accessToken = authData.accessToken;
 
             return user;
         } catch (error) {
-            console.error('UserFactory.createUser failed:', error);
+            if (error instanceof Error) {
+                console.error(`UserFactory.createUser failed for ${userData.email}:`, error.message);
+            }
             throw error;
         }
     }
@@ -128,36 +137,18 @@ export class UserFactory {
      * Cleanup: Delete all users created during the test
      * Called automatically by fixture after test completion
      */
-    async cleanup(): Promise<{ deleted: number; failed: number; errors: Array<{ id: string; error: string }> }> {
-        const results = await Promise.allSettled(
-            this.createdUserIds.map(async (userId) => {
+    async cleanup(): Promise<CleanupResult<string>> {
+        const result = await cleanupResources(
+            this.createdUserIds,
+            async (userId) => {
                 const response = await this.request.delete(`${this.baseURL}/users/${userId}`);
                 if (!response.ok()) {
                     throw new Error(`Failed to delete user ${userId}: ${response.status()} ${await response.text()}`);
                 }
-                return userId;
-            })
+            },
+            'user'
         );
-
-        const deleted: string[] = [];
-        const failed: Array<{ id: string; error: string }> = [];
-
-        results.forEach((result, index) => {
-            const userId = this.createdUserIds[index];
-            if (result.status === 'fulfilled') {
-                deleted.push(userId);
-            } else {
-                failed.push({ id: userId, error: result.reason.message });
-                console.warn(`Failed to delete user ${userId}:`, result.reason);
-            }
-        });
-
         this.createdUserIds = [];
-
-        if (failed.length > 0) {
-            console.warn(`UserFactory cleanup: ${deleted.length} deleted, ${failed.length} failed`);
-        }
-
-        return { deleted: deleted.length, failed: failed.length, errors: failed };
+        return result;
     }
 }
