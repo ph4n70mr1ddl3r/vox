@@ -1,6 +1,12 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-inputDocuments: ["docs/prd.md", "docs/analysis/product-brief-vox-2025-12-03.md", "docs/analysis/research/market-vox-reputation-platform-research-2025-12-04.md", "docs/analysis/brainstorming-session-2025-12-03.md"]
+inputDocuments:
+  [
+    'docs/prd.md',
+    'docs/analysis/product-brief-vox-2025-12-03.md',
+    'docs/analysis/research/market-vox-reputation-platform-research-2025-12-04.md',
+    'docs/analysis/brainstorming-session-2025-12-03.md',
+  ]
 workflowType: 'ux-design'
 lastStep: 13
 project_name: 'vox'
@@ -115,16 +121,19 @@ Our target users love LinkedIn for professional credibility verification, Airbnb
 ### Transferable UX Patterns
 
 **Navigation Patterns:**
+
 - Profile-centric hubs (LinkedIn model) make reputation and trust information the central focus
 - Clear inbox separation (Airbnb approach) distinguishes requests from general communication
 - Activity feeds (GitHub style) visualize progress and engagement momentum
 
 **Interaction Patterns:**
+
 - One-click trust requests streamline connection building without friction
 - Structured feedback systems after collaborations establish clear evaluation flows
 - Visual progress indicators show tangible reputation growth over time
 
 **Visual Patterns:**
+
 - Badge and achievement displays gamify reputation without overwhelming complexity
 - Trust scores as primary decision factors (prominence like Airbnb ratings)
 - Activity timeline visualizations show authentic engagement patterns
@@ -140,16 +149,19 @@ Our target users love LinkedIn for professional credibility verification, Airbnb
 ### Design Inspiration Strategy
 
 **What to Adopt:**
+
 - Profile-centric design supporting reputation visibility and authentic trust building
 - Visual trust indicators building confidence in marketplace interactions
 - Contribution/activity visualization showing engagement authenticity over time
 
 **What to Adapt:**
+
 - Endorsement systems as weighted trust votes rather than simple endorsements
 - Messaging systems focused on collaboration rather than general communication
 - Activity feeds highlighting reputation milestones and collaboration achievements
 
 **What to Avoid:**
+
 - Algorithm-driven recommendations in favor of trust-based matching
 - Vanity metric displays replaced by meaningful reputation data
 - Complex notification systems in favor of focused, purposeful communication
@@ -248,6 +260,7 @@ Implementation prioritizes generous white space (8px base unit with multiples), 
 **Journey Goal:** Discover verified influencers and initiate authentic campaign collaborations with confidence.
 
 **Flow Steps:**
+
 1. **Discovery:** Browse marketplace or search by reputation filters
 2. **Evaluation:** View influencer profile with trust score, verification, past collaborations
 3. **Decision:** Choose influencer and campaign parameters
@@ -256,6 +269,7 @@ Implementation prioritizes generous white space (8px base unit with multiples), 
 6. **Monitoring:** Track campaign with real-time engagement metrics
 
 **Key Interactions:**
+
 - Filter by reputation score (eliminates fake accounts early)
 - One-click campaign initiation with optional messaging
 - Real-time notifications of influencer responses
@@ -266,6 +280,7 @@ Implementation prioritizes generous white space (8px base unit with multiples), 
 **Journey Goal:** Build authentic reputation through trust network and get discovered by quality brands.
 
 **Flow Steps:**
+
 1. **Onboarding:** Complete profile with authentic bio and social links
 2. **Network Building:** Add trusted connections and earn badges
 3. **Reputation Growth:** System calculates reputation score in real-time
@@ -274,6 +289,7 @@ Implementation prioritizes generous white space (8px base unit with multiples), 
 6. **Success:** Consistent fair compensation based on authentic reach
 
 **Key Interactions:**
+
 - Trust request with optional personal message
 - Visual reputation score updating in real-time
 - Achievement badges for network milestones
@@ -284,6 +300,7 @@ Implementation prioritizes generous white space (8px base unit with multiples), 
 **Journey Goal:** Participate meaningfully in brand campaigns with authentic voice recognized and rewarded.
 
 **Flow Steps:**
+
 1. **Invitation:** Discover campaign through influencer or brand invitation
 2. **Engagement:** Learn campaign goals and contribution requirements
 3. **Submission:** Create and submit authentic contribution
@@ -292,6 +309,7 @@ Implementation prioritizes generous white space (8px base unit with multiples), 
 6. **Loyalty:** Build achievement history and unlock exclusive opportunities
 
 **Key Interactions:**
+
 - One-click campaign join through trusted influencer/brand
 - Simple submission interface with clear expectations
 - Voting UI emphasizing authentic feedback vs. bot detection
@@ -434,6 +452,7 @@ Mobile-first design philosophy ensures core functionality works everywhere, with
 **Target: WCAG 2.1 AA compliance** (industry standard) for all user journeys. The trust and reputation system requires accessibility because transparency mission demands inclusive information access.
 
 **Key Standards:**
+
 - Color contrast 4.5:1 for normal text, 3:1 for large text
 - Full keyboard navigation without traps; logical, visible tab order
 - Semantic HTML with ARIA labels for reputation scores and badges
@@ -473,6 +492,7 @@ This UX Design Specification provides comprehensive guidance for implementing vo
 ### Next Steps
 
 This specification is complete and ready for:
+
 - **Design:** Create high-fidelity mockups using Tailwind + Headless UI foundation
 - **Development:** Build components following established patterns and accessibility guidelines
 - **Testing:** Validate responsive design and accessibility compliance with real users

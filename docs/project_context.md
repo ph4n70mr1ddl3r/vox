@@ -2,7 +2,8 @@
 project_name: 'vox'
 user_name: 'Riddler'
 date: '2025-12-04'
-sections_completed: ['technology_stack', 'implementation_rules', 'patterns', 'anti_patterns', 'testing']
+sections_completed:
+  ['technology_stack', 'implementation_rules', 'patterns', 'anti_patterns', 'testing']
 source: 'architecture.md'
 ---
 
@@ -15,31 +16,37 @@ _This file contains critical rules and patterns that AI agents must follow when 
 ## Technology Stack & Versions
 
 **Frontend Framework:**
+
 - **Next.js:** 16.x (App Router, TypeScript, Server Components)
 - **TypeScript:** 5.x (strict mode enabled)
 - **Styling:** Tailwind CSS v3 with PostCSS
 - **UI Components:** Headless UI (no pre-built component library)
 
 **Backend & Runtime:**
+
 - **Node.js:** 18+ LTS
 - **Runtime Environment:** Vercel Functions (serverless)
 
 **Database:**
+
 - **Primary:** PostgreSQL (latest LTS)
 - **ORM:** Prisma (latest version)
 - **Graph Support:** Custom recursive SQL queries for trust network
 
 **Authentication:**
+
 - **System:** NextAuth.js (latest)
 - **OAuth Providers:** Google, GitHub, Discord (configured in code)
 - **Session:** JWT-based with custom claims
 
 **Deployment:**
+
 - **Platform:** Vercel (zero-config deployment)
 - **Database Hosting:** External PostgreSQL (recommend Vercel Postgres or AWS RDS)
 - **CDN:** Vercel Edge Network (automatic)
 
 **Development Tools:**
+
 - **Build Tool:** Turbopack (default Next.js 16)
 - **Linter:** ESLint with Next.js plugin
 - **Code Formatter:** Prettier (recommended, not enforced)
@@ -52,6 +59,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 ### Rule 1: Database Naming Convention - STRICT
 
 **Database layer (Prisma schema):** `snake_case` ALWAYS
+
 ```prisma
 model User {
   id           String   @id
@@ -62,6 +70,7 @@ model User {
 ```
 
 **TypeScript/Application layer:** `camelCase` ALWAYS
+
 ```typescript
 interface User {
   id: string
@@ -80,6 +89,7 @@ interface User {
 ### Rule 2: API Endpoints - RESTful Plural Resources Only
 
 **ALL API endpoints MUST be:**
+
 - Plural resource names: `/api/trust-connections/` NOT `/api/trust-connection/`
 - Kebab-case routes: `/api/trust-connections/` NOT `/api/trustConnections/`
 - RESTful HTTP verbs:
@@ -91,6 +101,7 @@ interface User {
   - `POST /api/campaigns/:id/join` - Custom actions as nested routes
 
 **Never use RPC-style endpoints:**
+
 - ❌ `/api/createCampaign`
 - ❌ `/api/getUserReputation`
 - ❌ `/api/acceptTrustConnection`
@@ -104,6 +115,7 @@ interface User {
 **EVERY API response MUST have this exact structure:**
 
 Success response:
+
 ```typescript
 {
   success: true,
@@ -117,6 +129,7 @@ Success response:
 ```
 
 Error response:
+
 ```typescript
 {
   success: false,
@@ -130,6 +143,7 @@ Error response:
 ```
 
 **Use helper functions:** Import from `lib/api-responses.ts`
+
 ```typescript
 import { successResponse, errorResponse } from '@/lib/api-responses'
 
@@ -150,6 +164,7 @@ export async function POST(req: Request) {
 ### Rule 4: File Naming - Component vs Utility
 
 **Component files (React):** PascalCase
+
 - ✅ `UserCard.tsx`
 - ✅ `TrustNetwork.tsx`
 - ✅ `CampaignForm.tsx`
@@ -157,6 +172,7 @@ export async function POST(req: Request) {
 - ❌ `trust_network.tsx`
 
 **Utility/helper files:** camelCase
+
 - ✅ `calculateReputation.ts`
 - ✅ `auth-guard.ts` (with hyphens allowed)
 - ✅ `validateTrustConnection.ts`
@@ -164,6 +180,7 @@ export async function POST(req: Request) {
 - ❌ `trust_connection_validator.ts`
 
 **Hook files:** camelCase with `use` prefix
+
 - ✅ `useUserProfile.ts`
 - ✅ `useTrustNetwork.ts`
 - ✅ `useReputation.ts`
@@ -206,6 +223,7 @@ src/
 ```
 
 **Rules:**
+
 - Feature-specific components stay in feature folder
 - Shared components in `components/` only if used by 3+ features
 - Utilities in `lib/` organized by domain (not by type)
@@ -239,6 +257,7 @@ export default function ProfilePage({ params }: Props) {
 ```
 
 **Use 'use client' ONLY when you need:**
+
 - React hooks (useState, useEffect, etc.)
 - Event listeners
 - Browser APIs
@@ -271,6 +290,7 @@ interface PageState {
 ```
 
 **In components:**
+
 ```typescript
 // ✅ CORRECT with Suspense for Server Components
 import { Suspense } from 'react'
@@ -290,7 +310,7 @@ export function ProfileWithTrust({ userId }) {
 'use client'
 export function CampaignForm() {
   const [state, setState] = useState<LoadingState>('idle')
-  
+
   return (
     <form>
       <button disabled={state === 'loading'}>
@@ -333,6 +353,7 @@ export const ErrorCodes = {
 ```
 
 **Use in API routes:**
+
 ```typescript
 export async function POST(req: Request) {
   try {
@@ -383,6 +404,7 @@ await prisma.user.update({ ... })
 ```
 
 **After transactions, invalidate cache:**
+
 ```typescript
 import { revalidateTag } from 'next/cache'
 
@@ -436,6 +458,7 @@ export async function POST(req: Request) {
 ```
 
 **Authorization tiers:**
+
 - Brands: Minimum 6.0 reputation to post campaigns
 - Influencers: Minimum 7.0 to access premium analytics
 - Followers: Minimum 5.0 to participate in collaborations
@@ -455,20 +478,20 @@ const influencer = await prisma.user.findUnique({
   include: {
     trustGiven: {
       where: { status: 'accepted' },
-      include: { to: { select: { id: true, name: true, reputation: true } } }
+      include: { to: { select: { id: true, name: true, reputation: true } } },
     },
     trustReceived: { where: { status: 'accepted' } },
     campaigns: true,
-    collaborations: { include: { campaign: true } }
-  }
+    collaborations: { include: { campaign: true } },
+  },
 })
 
 // ❌ WRONG - missing relations, have to fetch separately
 const influencer = await prisma.user.findUnique({
-  where: { id: userId }
+  where: { id: userId },
 })
 const trustGiven = await prisma.trustEdge.findMany({
-  where: { fromId: userId, status: 'accepted' }
+  where: { fromId: userId, status: 'accepted' },
 })
 // Now trustGiven data is separate, hard to correlate
 ```
@@ -495,7 +518,7 @@ export async function acceptTrustConnection(edgeId: string) {
   revalidateTag(`reputation-${edge.fromId}`)
   revalidateTag(`reputation-${edge.toId}`)
   revalidateTag(`trust-connections-${edge.fromId}`)
-  
+
   return edge
 }
 
@@ -508,6 +531,7 @@ export async function acceptTrustConnection(edgeId: string) {
 ```
 
 **Server Components using tags:**
+
 ```typescript
 export default async function ReputationDisplay({ userId }: Props) {
   const reputation = await getReputationScore(userId)
@@ -541,9 +565,9 @@ export default async function ProfilePage({ params }: { params: { id: string } }
     where: { id: params.id },
     include: { trustGiven: true, campaigns: true }
   })
-  
+
   if (!user) notFound()
-  
+
   return (
     <div>
       <h1>{user.name}</h1>
@@ -565,16 +589,16 @@ export async function POST(req: Request) {
   }
 
   const { toUserId } = await req.json()
-  
+
   try {
     const connection = await prisma.trustEdge.create({
       data: {
         fromId: session.user.id,
         toId: toUserId,
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     })
-    
+
     revalidateTag(`trust-connections-${session.user.id}`)
     return successResponse(connection)
   } catch (error) {
@@ -600,20 +624,20 @@ export function TrustRequestForm({ toUserId }: Props) {
   async function handleSubmit() {
     setIsPending(true)
     setError(null)
-    
+
     try {
       const response = await fetch('/api/trust-connections', {
         method: 'POST',
         body: JSON.stringify({ toUserId })
       })
-      
+
       const result = await response.json()
-      
+
       if (!result.success) {
         setError(result.error.message)
         return
       }
-      
+
       // Success - redirect or update state
       window.location.reload()
     } catch (err) {
@@ -637,6 +661,7 @@ export function TrustRequestForm({ toUserId }: Props) {
 ## Anti-Patterns to Avoid
 
 **❌ DO NOT:**
+
 - Mix snake_case and camelCase in same layer (database vs application)
 - Create singular API endpoints (`/api/campaign/` instead of `/api/campaigns/`)
 - Return raw data from API routes without wrapper
@@ -653,28 +678,32 @@ export function TrustRequestForm({ toUserId }: Props) {
 ## Testing Rules
 
 **Unit Tests:** Test utilities and business logic in isolation
+
 - Location: `tests/unit/`
 - Tools: Vitest
 - Pattern: Describe blocks organized by function name
 
 **Integration Tests:** Test API routes and database interactions
+
 - Location: `tests/integration/`
 - Tools: Vitest + `@testing-library/node`
 - Pattern: Test complete request/response cycles
 
 **E2E Tests:** Test complete user journeys
+
 - Location: `tests/e2e/`
 - Tools: Playwright
 - Pattern: Full user flows from login to campaign creation
 
 **Mock Pattern:**
+
 ```typescript
 // Always mock Prisma in tests
 jest.mock('@/lib/db', () => ({
   prisma: {
     user: { findUnique: jest.fn() },
-    trustEdge: { create: jest.fn() }
-  }
+    trustEdge: { create: jest.fn() },
+  },
 }))
 ```
 
@@ -683,11 +712,13 @@ jest.mock('@/lib/db', () => ({
 ## Development Workflow
 
 **Branch Naming:**
+
 - Feature: `feature/trust-graph-visualization`
 - Bug fix: `fix/reputation-calculation-bug`
 - Chore: `chore/update-dependencies`
 
 **Commit Messages:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -697,6 +728,7 @@ Closes #<issue-number>
 ```
 
 **Code Review Checklist:**
+
 - [ ] Follows architecture patterns exactly
 - [ ] Database naming (snake_case) vs app naming (camelCase) correct
 - [ ] API responses wrapped correctly
@@ -726,4 +758,3 @@ Closes #<issue-number>
 **Last Updated:** 2025-12-04  
 **Source:** Derived from architecture.md step-by-step validation  
 **Next Review:** After first sprint implementation
-

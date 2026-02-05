@@ -124,27 +124,28 @@ tests/
 Tests use **auto-cleanup fixtures** to ensure test isolation:
 
 ```typescript
-import { test, expect } from '../support/fixtures';
+import { test, expect } from '../support/fixtures'
 
 test('scenario', async ({ userFactory, trustConnectionFactory }) => {
   // Create test data
-  const influencer = await userFactory.createInfluencer({ reputationScore: 85 });
-  const brand = await userFactory.createBrand();
-  
+  const influencer = await userFactory.createInfluencer({ reputationScore: 85 })
+  const brand = await userFactory.createBrand()
+
   // Build trust network
   await trustConnectionFactory.createConnection({
     fromUserId: influencer.id,
     toUserId: brand.id,
-    trustLevel: 90
-  });
-  
+    trustLevel: 90,
+  })
+
   // Test logic...
-  
+
   // Automatic cleanup happens after test completes
-});
+})
 ```
 
 **Benefits:**
+
 - ✅ Test isolation (no data pollution between tests)
 - ✅ No manual cleanup code needed
 - ✅ Parallel-safe (each test creates unique data)
@@ -158,20 +159,20 @@ Create test users with different roles:
 
 ```typescript
 // Create specific role
-const brand = await userFactory.createBrand({ reputationScore: 70 });
-const influencer = await userFactory.createInfluencer({ verified: true });
-const follower = await userFactory.createFollower();
+const brand = await userFactory.createBrand({ reputationScore: 70 })
+const influencer = await userFactory.createInfluencer({ verified: true })
+const follower = await userFactory.createFollower()
 
 // Create with overrides
 const user = await userFactory.createUser({
   role: 'influencer',
   email: 'specific@example.com',
   reputationScore: 95,
-  socialAccounts: { instagram: '@influencer' }
-});
+  socialAccounts: { instagram: '@influencer' },
+})
 
 // Bulk creation
-const users = await userFactory.createUsers(10, { role: 'follower' });
+const users = await userFactory.createUsers(10, { role: 'follower' })
 ```
 
 #### CampaignFactory
@@ -184,8 +185,8 @@ const campaign = await campaignFactory.createCampaign({
   budget: 5000,
   minReputationScore: 70,
   category: 'fashion',
-  maxInfluencers: 10
-});
+  maxInfluencers: 10,
+})
 ```
 
 #### TrustConnectionFactory
@@ -197,14 +198,14 @@ Build trust graphs for testing:
 const connection = await trustConnectionFactory.createConnection({
   fromUserId: userA.id,
   toUserId: userB.id,
-  trustLevel: 85
-});
+  trustLevel: 85,
+})
 
 // Star network (center connected to multiple users)
-await trustConnectionFactory.createNetwork(center.id, [user1.id, user2.id, user3.id]);
+await trustConnectionFactory.createNetwork(center.id, [user1.id, user2.id, user3.id])
 
 // Chain network (for path testing)
-await trustConnectionFactory.createChain([userA.id, userB.id, userC.id, userD.id]);
+await trustConnectionFactory.createChain([userA.id, userB.id, userC.id, userD.id])
 ```
 
 ---
@@ -217,10 +218,10 @@ await trustConnectionFactory.createChain([userA.id, userB.id, userC.id, userD.id
 
 ```typescript
 // ✅ Good: Stable, semantic
-await page.click('[data-testid="send-trust-request"]');
+await page.click('[data-testid="send-trust-request"]')
 
 // ❌ Bad: Brittle, breaks with styling changes
-await page.click('.btn-primary.trust-btn');
+await page.click('.btn-primary.trust-btn')
 ```
 
 ### Test Design Principles
@@ -245,14 +246,17 @@ Testing trust networks requires special consideration:
 ```typescript
 test('reputation algorithm', async ({ userFactory, trustConnectionFactory }) => {
   // Build controlled network topology
-  const users = await userFactory.createUsers(5);
-  
+  const users = await userFactory.createUsers(5)
+
   // Create specific graph structure (star, chain, etc.)
-  await trustConnectionFactory.createNetwork(users[0].id, users.slice(1).map(u => u.id));
-  
+  await trustConnectionFactory.createNetwork(
+    users[0].id,
+    users.slice(1).map(u => u.id)
+  )
+
   // Trigger reputation calculation
   // Assert expected reputation scores based on network topology
-});
+})
 ```
 
 ---
@@ -279,6 +283,7 @@ npx playwright show-trace test-results/traces/trace.zip
 ```
 
 Trace includes:
+
 - Screenshots at each step
 - Network requests
 - Console logs
@@ -310,20 +315,20 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20.11.0'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      
+
       - name: Run E2E tests
         run: npm run test:e2e
         env:
           CI: true
           BASE_URL: http://localhost:3000
           API_URL: http://localhost:3000/api
-      
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v3
@@ -377,16 +382,19 @@ tests/e2e/
 ### Common Issues
 
 **Tests timing out:**
+
 - Check `BASE_URL` is correct in `.env`
 - Ensure dev server is running (`npm run dev`)
 - Increase timeout in `playwright.config.ts`
 
 **Database conflicts:**
+
 - Tests should use auto-cleanup factories
 - Disable parallel execution if database locks occur
 - Use unique test data (factories use faker for randomness)
 
 **Flaky tests:**
+
 - Replace `waitForTimeout` with `waitFor` assertions
 - Use `data-testid` selectors instead of CSS classes
 - Check for race conditions in test setup

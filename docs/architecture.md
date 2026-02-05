@@ -1,9 +1,9 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
-inputDocuments: 
-  - "docs/prd.md"
-  - "docs/ux-design-specification.md"
-  - "docs/analysis/product-brief-vox-2025-12-03.md"
+inputDocuments:
+  - 'docs/prd.md'
+  - 'docs/ux-design-specification.md'
+  - 'docs/analysis/product-brief-vox-2025-12-03.md'
 workflowType: 'architecture'
 lastStep: 8
 project_name: 'vox'
@@ -18,13 +18,13 @@ technicalPreferences:
   styling: Tailwind CSS
   database: PostgreSQL
   deployment: Vercel
-selectedStarter: "create-next-app"
+selectedStarter: 'create-next-app'
 coreArchitecturalDecisions:
-  dataArchitecture: "PostgreSQL + Custom Graph Logic"
-  authentication: "NextAuth.js"
-  apiPattern: "REST API with Server Components"
-  dataAccess: "Prisma ORM"
-  caching: "Vercel Built-in + Query Caching"
+  dataArchitecture: 'PostgreSQL + Custom Graph Logic'
+  authentication: 'NextAuth.js'
+  apiPattern: 'REST API with Server Components'
+  dataAccess: 'Prisma ORM'
+  caching: 'Vercel Built-in + Query Caching'
 ---
 
 # Architecture Decision Document - vox
@@ -44,7 +44,7 @@ Welcome Riddler! I've set up your Architecture workspace for vox.
 ### Documents Found:
 
 - **PRD:** 1 document loaded - `docs/prd.md` ✓
-- **UX Design Specification:** 1 document loaded - `docs/ux-design-specification.md` ✓  
+- **UX Design Specification:** 1 document loaded - `docs/ux-design-specification.md` ✓
 - **Product Brief:** 1 document loaded - `docs/analysis/product-brief-vox-2025-12-03.md` ✓
 - **Project Context:** None found
 - **Research Documents:** None found in standard locations
@@ -52,6 +52,7 @@ Welcome Riddler! I've set up your Architecture workspace for vox.
 ### Key Input Summary:
 
 Your PRD establishes vox as a reputation-driven web platform with:
+
 - **Architecture:** Multi-Page Application (MPA) for SEO optimization
 - **Core Problem:** Brands waste 20-30% on fake engagement; influencers undervalued; followers drowned out by bots
 - **Solution:** Trust graphs + decentralized verification + reputation-based marketplace
@@ -60,6 +61,7 @@ Your PRD establishes vox as a reputation-driven web platform with:
 - **Performance Targets:** <3s page load on 3G, support 10K concurrent users, 95% bot detection
 
 Your UX Design specification confirms:
+
 - **Platform Strategy:** MPA web application, mobile-responsive, profile-centric
 - **Design Foundation:** Tailwind CSS + Headless UI, Modern Minimal + Trust-Centric direction
 - **Core Experience:** Building trust networks through one-click connections
@@ -127,19 +129,20 @@ I'm ready to begin architectural decision making to translate these requirements
 
 The project presents low business logic complexity but moderate technical complexity:
 
-| Factor | Assessment |
-|--------|-----------|
-| Real-time Features | None in MVP (architectural advantage) |
-| Multi-Tenancy | Single-tenant SaaS |
-| Regulatory Compliance | Standard data privacy, no specialized domains |
-| Integration Complexity | Social account OAuth, email service, file storage |
-| Data Complexity | Graph-based (trust connections) + relational |
-| User Interaction Complexity | Forms + visualizations (moderate) |
-| Algorithm Complexity | Reputation scoring (moderate) + bot detection (complex) |
+| Factor                      | Assessment                                              |
+| --------------------------- | ------------------------------------------------------- |
+| Real-time Features          | None in MVP (architectural advantage)                   |
+| Multi-Tenancy               | Single-tenant SaaS                                      |
+| Regulatory Compliance       | Standard data privacy, no specialized domains           |
+| Integration Complexity      | Social account OAuth, email service, file storage       |
+| Data Complexity             | Graph-based (trust connections) + relational            |
+| User Interaction Complexity | Forms + visualizations (moderate)                       |
+| Algorithm Complexity        | Reputation scoring (moderate) + bot detection (complex) |
 
 **Architectural Component Estimate:** 12-15 core components required
 
 **Primary Technical Domains:**
+
 - Graph database (trust relationships and network queries)
 - Relational database (users, campaigns, collaborations, verification votes)
 - Reputation algorithm engine (real-time score calculation)
@@ -159,6 +162,7 @@ The project presents low business logic complexity but moderate technical comple
 6. **Mobile Responsive:** Must work flawlessly on mobile browsers. No native app in MVP—architectural simplification
 
 **External Dependencies:**
+
 - Social account OAuth APIs (pre-integration ready)
 - Email service (transactional + marketing capability)
 - File storage service (S3-compatible for collaboration files)
@@ -234,6 +238,7 @@ The project presents low business logic complexity but moderate technical comple
 **Option 1: `create-next-app` (Official Next.js) - RECOMMENDED ✓**
 
 **Initialization Command:**
+
 ```bash
 npx create-next-app@latest vox --typescript --tailwind --app --src-dir --eslint
 ```
@@ -244,17 +249,17 @@ npx create-next-app@latest vox --typescript --tailwind --app --src-dir --eslint
 
 **Architectural Decisions Provided:**
 
-| Decision | Implementation |
-|----------|-----------------|
-| **Language/Runtime** | TypeScript with strict mode enabled, Node.js 18+ runtime |
-| **Framework** | Next.js 16 with App Router (latest server components pattern) |
-| **Build Tooling** | Turbopack enabled by default (fast builds < 1s for iterations) |
-| **Styling Solution** | Tailwind CSS v3 with PostCSS configured, utility-first approach |
-| **Code Quality** | ESLint with Next.js plugin, Prettier-ready |
-| **Project Structure** | src/app structure (professional organization for scaling) |
-| **Development Server** | Next.js dev server with hot reloading and fast refresh |
-| **Production Build** | Optimized production build with code splitting and tree-shaking |
-| **Deployment Ready** | Zero-config Vercel deployment support |
+| Decision               | Implementation                                                  |
+| ---------------------- | --------------------------------------------------------------- |
+| **Language/Runtime**   | TypeScript with strict mode enabled, Node.js 18+ runtime        |
+| **Framework**          | Next.js 16 with App Router (latest server components pattern)   |
+| **Build Tooling**      | Turbopack enabled by default (fast builds < 1s for iterations)  |
+| **Styling Solution**   | Tailwind CSS v3 with PostCSS configured, utility-first approach |
+| **Code Quality**       | ESLint with Next.js plugin, Prettier-ready                      |
+| **Project Structure**  | src/app structure (professional organization for scaling)       |
+| **Development Server** | Next.js dev server with hot reloading and fast refresh          |
+| **Production Build**   | Optimized production build with code splitting and tree-shaking |
+| **Deployment Ready**   | Zero-config Vercel deployment support                           |
 
 **Why This Starter for Vox:**
 
@@ -283,6 +288,7 @@ npx create-next-app@latest vox --typescript --tailwind --app --src-dir --eslint
 **Status:** Community-maintained, highly opinionated toward excellent practices
 
 **What It Provides:**
+
 - Next.js + TypeScript + Tailwind CSS (matches your choices)
 - **tRPC** (type-safe client-server communication)
 - **Prisma ORM** (type-safe database queries for PostgreSQL)
@@ -290,6 +296,7 @@ npx create-next-app@latest vox --typescript --tailwind --app --src-dir --eslint
 - Project structure optimized for full-stack
 
 **Why Not Selected:**
+
 - tRPC is opinionated for API layer; REST may be simpler for MPA
 - Prisma is excellent but constrains graph database patterns
 - More opinions = fewer choices, good for beginners but you need flexibility for trust graph
@@ -332,6 +339,7 @@ These five decisions directly enable or block all development work:
 **Selected:** PostgreSQL + Custom Graph Logic
 
 **Rationale:**
+
 - MVP focus requires quick implementation over maximum performance
 - PostgreSQL handles your relational data (users, campaigns, collaborations)
 - Trust connections stored as edges with recursive query support
@@ -381,9 +389,9 @@ WITH RECURSIVE trust_paths AS (
   SELECT from_user_id, to_user_id, 1 as distance
   FROM trust_edges
   WHERE status = 'accepted' AND from_user_id = $1
-  
+
   UNION ALL
-  
+
   SELECT tp.from_user_id, te.to_user_id, tp.distance + 1
   FROM trust_paths tp
   JOIN trust_edges te ON tp.to_user_id = te.from_user_id
@@ -396,6 +404,7 @@ ORDER BY min_distance;
 ```
 
 **Bot Detection Integration:**
+
 - Analyze connection patterns for suspicious behavior
 - Flag rapid connection/disconnection cycles
 - Monitor for isolated clusters or artificial patterns
@@ -403,11 +412,13 @@ ORDER BY min_distance;
 
 **Future Migration Path:**
 If graph queries become bottleneck at scale (Phase 2+):
+
 - Migrate trust relationships to Neo4j
 - Keep PostgreSQL for relational data
 - Implement synchronization layer
 
 **Affects:**
+
 - Reputation calculation algorithm
 - Bot detection queries
 - Influencer discovery performance
@@ -420,6 +431,7 @@ If graph queries become bottleneck at scale (Phase 2+):
 **Selected:** NextAuth.js with Trust-Based Access Control
 
 **Rationale:**
+
 - Next.js native authentication (perfect for App Router)
 - OAuth support for social verification (Google, GitHub, Discord)
 - Session management built-in, Vercel deployment seamless
@@ -431,9 +443,9 @@ If graph queries become bottleneck at scale (Phase 2+):
 
 ```typescript
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
+import NextAuth from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 
 const handler = NextAuth({
   providers: [
@@ -445,14 +457,14 @@ const handler = NextAuth({
       async authorize(credentials) {
         // Email/password with vox-specific verification
         const user = await db.user.findUnique({
-          where: { email: credentials?.email }
+          where: { email: credentials?.email },
         })
-        if (user && await verifyPassword(credentials?.password, user.password)) {
+        if (user && (await verifyPassword(credentials?.password, user.password))) {
           return { id: user.id, email: user.email, reputation: user.reputation }
         }
         return null
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -470,8 +482,8 @@ const handler = NextAuth({
       session.user.reputation = token.reputation
       session.user.userType = token.userType
       return session
-    }
-  }
+    },
+  },
 })
 
 export { handler as GET, handler as POST }
@@ -493,12 +505,13 @@ export async function requireMinReputation(reputation: number) {
 // Usage in Server Components
 export default async function SponsorCampaigns() {
   const user = await requireMinReputation(7.0) // Only users with 7.0+ can sponsor
-  
+
   return <CampaignSponsorship user={user} />
 }
 ```
 
 **Authorization Rules:**
+
 - Brands: Minimum 6.0 reputation to post campaigns
 - Influencers: Minimum 7.0 to access premium analytics
 - Followers: Minimum 5.0 to participate in collaborations
@@ -506,6 +519,7 @@ export default async function SponsorCampaigns() {
 - Admins: System role, full platform access
 
 **Affects:**
+
 - User registration flow
 - Session management
 - API endpoint security
@@ -519,6 +533,7 @@ export default async function SponsorCampaigns() {
 **Selected:** REST API (server/api routes) + Next.js Server Components
 
 **Rationale:**
+
 - MPA architecture doesn't require complex client-server communication
 - Server Components fetch data directly (no API call needed for initial render)
 - Form submissions and page reloads are primary interaction pattern
@@ -600,16 +615,16 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
 **RESTful Endpoints:**
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| POST | `/api/trust-connections` | Send trust request |
-| PUT | `/api/trust-connections/:id` | Accept/reject trust |
-| DELETE | `/api/trust-connections/:id` | Remove trust connection |
-| POST | `/api/campaigns` | Create campaign (brands only) |
-| POST | `/api/campaigns/:id/join` | Join collaboration |
-| POST | `/api/campaigns/:id/submit` | Submit contribution (followers) |
-| POST | `/api/campaigns/:id/vote` | Vote on authenticity |
-| GET | `/api/influencers/search` | Search influencers (with query params) |
+| Method | Endpoint                     | Purpose                                |
+| ------ | ---------------------------- | -------------------------------------- |
+| POST   | `/api/trust-connections`     | Send trust request                     |
+| PUT    | `/api/trust-connections/:id` | Accept/reject trust                    |
+| DELETE | `/api/trust-connections/:id` | Remove trust connection                |
+| POST   | `/api/campaigns`             | Create campaign (brands only)          |
+| POST   | `/api/campaigns/:id/join`    | Join collaboration                     |
+| POST   | `/api/campaigns/:id/submit`  | Submit contribution (followers)        |
+| POST   | `/api/campaigns/:id/vote`    | Vote on authenticity                   |
+| GET    | `/api/influencers/search`    | Search influencers (with query params) |
 
 **Error Handling:**
 
@@ -621,23 +636,18 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
-        return Response.json(
-          { error: 'Duplicate entry' },
-          { status: 409 }
-        )
+        return Response.json({ error: 'Duplicate entry' }, { status: 409 })
       }
     }
-    
+
     console.error('API error:', error)
-    return Response.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 ```
 
 **Affects:**
+
 - Frontend form submissions
 - Data mutations (trust connections, collaborations)
 - Search and filter endpoints
@@ -650,6 +660,7 @@ export async function POST(req: Request) {
 **Selected:** Prisma ORM for type-safe database access
 
 **Rationale:**
+
 - TypeScript-first, matches your language choice
 - Excellent for complex relations (trust graph modeling is intuitive)
 - Automatic migration system scales cleanly
@@ -676,15 +687,15 @@ model User {
   name          String?
   userType      UserType    // 'brand', 'influencer', 'follower'
   reputation    Float       @default(5.0)
-  
+
   // Trust relationships
   trustGiven    TrustEdge[] @relation("given")
   trustReceived TrustEdge[] @relation("received")
-  
+
   // Campaigns
   campaigns     Campaign[]  @relation("brandCampaigns")
   collaborations Collaboration[]
-  
+
   createdAt     DateTime    @default(now())
 }
 
@@ -695,9 +706,9 @@ model TrustEdge {
   to        User     @relation("received", fields: [toId], references: [id], onDelete: Cascade)
   toId      String
   status    String   @default("pending") // 'pending', 'accepted', 'rejected'
-  
+
   createdAt DateTime @default(now())
-  
+
   @@unique([fromId, toId])
   @@index([fromId])
   @@index([toId])
@@ -709,9 +720,9 @@ model Campaign {
   brandId     String
   title       String
   description String
-  
+
   collaborations Collaboration[]
-  
+
   createdAt   DateTime  @default(now())
 }
 
@@ -722,9 +733,9 @@ model Collaboration {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   status      String   @default("joined")
-  
+
   createdAt   DateTime @default(now())
-  
+
   @@unique([campaignId, userId])
 }
 
@@ -746,24 +757,24 @@ const influencer = await prisma.user.findUnique({
   include: {
     trustGiven: {
       where: { status: 'accepted' },
-      include: { to: { select: { id: true, name: true, reputation: true } } }
+      include: { to: { select: { id: true, name: true, reputation: true } } },
     },
     trustReceived: { where: { status: 'accepted' } },
     campaigns: true,
-    collaborations: { include: { campaign: true } }
-  }
+    collaborations: { include: { campaign: true } },
+  },
 })
 
 // Transactional operations (reputation update on trust accept)
 await prisma.$transaction([
   prisma.trustEdge.update({
     where: { id: edgeId },
-    data: { status: 'accepted' }
+    data: { status: 'accepted' },
   }),
   prisma.user.update({
     where: { id: fromUserId },
-    data: { reputation: { increment: 0.1 } }
-  })
+    data: { reputation: { increment: 0.1 } },
+  }),
 ])
 
 // Raw SQL for complex graph queries
@@ -777,6 +788,7 @@ const trustDistances = await prisma.$queryRaw`
 ```
 
 **Affects:**
+
 - Database schema management
 - Query performance optimization
 - Type safety throughout backend
@@ -789,6 +801,7 @@ const trustDistances = await prisma.$queryRaw`
 **Selected:** Vercel's Built-in Caching + Next.js Tag-Based Revalidation
 
 **Rationale:**
+
 - Zero infrastructure overhead (Vercel handles everything)
 - Meets <3s load target with proper query optimization
 - Tag-based invalidation works perfectly for graph updates
@@ -857,7 +870,7 @@ export async function backgroundJobRecalculateReputation() {
     await prisma.reputationScore.upsert({
       where: { userId: user.id },
       update: { score: reputationScore, updatedAt: new Date() },
-      create: { userId: user.id, score: reputationScore }
+      create: { userId: user.id, score: reputationScore },
     })
   }
 }
@@ -883,11 +896,13 @@ export async function backgroundJobRecalculateReputation() {
 
 **Future Enhancement (Phase 2):**
 If metrics show need for sub-second reputation lookups:
+
 - Add Upstash Redis for hot data
 - Cache reputation scores in Redis (5-min TTL)
 - Database becomes fallback
 
 **Affects:**
+
 - Page load performance
 - Data freshness requirements
 - Trust connection responsiveness
@@ -923,24 +938,24 @@ Vercel Deployment
 
 ### Architectural Hotspots & Solutions
 
-| Hotspot | Challenge | Solution |
-|---------|-----------|----------|
-| Trust Graph Scaling | Millions of connections | PostgreSQL with indexes + recursive CTEs + materialized view |
-| Reputation Recalculation | 5-second SLA | Separate table + background job + cache invalidation |
-| Bot Detection | 95% accuracy needed | Query analysis + ML model (Phase 2) |
-| <3s Load Time | Performance target | Vercel edge caching + query optimization + page caching |
+| Hotspot                  | Challenge               | Solution                                                     |
+| ------------------------ | ----------------------- | ------------------------------------------------------------ |
+| Trust Graph Scaling      | Millions of connections | PostgreSQL with indexes + recursive CTEs + materialized view |
+| Reputation Recalculation | 5-second SLA            | Separate table + background job + cache invalidation         |
+| Bot Detection            | 95% accuracy needed     | Query analysis + ML model (Phase 2)                          |
+| <3s Load Time            | Performance target      | Vercel edge caching + query optimization + page caching      |
 
 ### Technology Stack Finalized
 
-| Component | Technology | Version |
-|-----------|-----------|---------|
-| Frontend | Next.js 16 | App Router, TypeScript, Tailwind CSS |
-| Backend | Node.js | Vercel Functions |
-| Database | PostgreSQL | Latest LTS |
-| ORM | Prisma | Latest |
-| Auth | NextAuth.js | Latest |
-| Deployment | Vercel | Serverless platform |
-| Styling | Tailwind CSS | v3 |
+| Component  | Technology   | Version                              |
+| ---------- | ------------ | ------------------------------------ |
+| Frontend   | Next.js 16   | App Router, TypeScript, Tailwind CSS |
+| Backend    | Node.js      | Vercel Functions                     |
+| Database   | PostgreSQL   | Latest LTS                           |
+| ORM        | Prisma       | Latest                               |
+| Auth       | NextAuth.js  | Latest                               |
+| Deployment | Vercel       | Serverless platform                  |
+| Styling    | Tailwind CSS | v3                                   |
 
 ---
 
@@ -1001,7 +1016,7 @@ model TrustEdge {
   id         String @id
   from_id    String @map("from_user_id")
   to_id      String @map("to_user_id")
-  
+
   @@index([from_id])
   @@index([to_id])
 }
@@ -1043,14 +1058,14 @@ POST   /api/acceptTrustConnection
 
 ```typescript
 // Success
-{ 
+{
   success: true,
   data: { id: '123', name: 'Alice', ...},
   meta: { timestamp: '2025-12-04T10:00:00Z' }
 }
 
 // Error
-{ 
+{
   success: false,
   error: {
     code: 'INSUFFICIENT_REPUTATION',
@@ -1079,16 +1094,19 @@ export function successResponse(data: any, meta = {}) {
   return Response.json({
     success: true,
     data,
-    meta: { timestamp: new Date().toISOString(), ...meta }
+    meta: { timestamp: new Date().toISOString(), ...meta },
   })
 }
 
 export function errorResponse(code: string, message: string, statusCode: number = 400) {
-  return Response.json({
-    success: false,
-    error: { code, message },
-    meta: { timestamp: new Date().toISOString() }
-  }, { status: statusCode })
+  return Response.json(
+    {
+      success: false,
+      error: { code, message },
+      meta: { timestamp: new Date().toISOString() },
+    },
+    { status: statusCode }
+  )
 }
 ```
 
@@ -1101,8 +1119,8 @@ export function errorResponse(code: string, message: string, statusCode: number 
 ```
 vox/
 ├── app/                          # Next.js App Router
-│   ├── layout.tsx               
-│   ├── page.tsx                 
+│   ├── layout.tsx
+│   ├── page.tsx
 │   ├── (auth)/                  # Route group
 │   │   ├── layout.tsx
 │   │   ├── login/page.tsx
@@ -1157,19 +1175,19 @@ vox/
 ```typescript
 // ✅ CORRECT: Component files (PascalCase)
 components/
-  ├── ProfileCard.tsx      
+  ├── ProfileCard.tsx
   ├── UserTrustNetwork.tsx
   └── CampaignForm.tsx
 
 // ✅ CORRECT: Utility files (camelCase)
 lib/
-  ├── reputation.ts        
+  ├── reputation.ts
   ├── auth-guard.ts
   └── api-responses.ts
 
 // ✅ CORRECT: Hook files (camelCase with "use" prefix)
 hooks/
-  ├── useUserProfile.ts    
+  ├── useUserProfile.ts
   ├── useTrustNetwork.ts
   └── useReputation.ts
 
@@ -1212,15 +1230,15 @@ export const ErrorCodes = {
   UNAUTHORIZED: { code: 'UNAUTHORIZED', statusCode: 401 },
   FORBIDDEN: { code: 'FORBIDDEN', statusCode: 403 },
   INSUFFICIENT_REPUTATION: { code: 'INSUFFICIENT_REPUTATION', statusCode: 403 },
-  
+
   // Validation errors
   INVALID_INPUT: { code: 'INVALID_INPUT', statusCode: 400 },
   DUPLICATE_ENTRY: { code: 'DUPLICATE_ENTRY', statusCode: 409 },
-  
+
   // Not found
   NOT_FOUND: { code: 'NOT_FOUND', statusCode: 404 },
   USER_NOT_FOUND: { code: 'USER_NOT_FOUND', statusCode: 404 },
-  
+
   // Server errors
   INTERNAL_ERROR: { code: 'INTERNAL_ERROR', statusCode: 500 },
 } as const
@@ -1236,7 +1254,7 @@ export async function POST(req: Request) {
         ErrorCodes.UNAUTHORIZED.statusCode
       )
     }
-    
+
     // ... operation
   } catch (error) {
     if (error instanceof ApiError) {
@@ -1289,17 +1307,17 @@ export function ProfileWithTrust({ userId }) {
 
 ### Pattern Summary Table
 
-| Aspect | Pattern | Example |
-|--------|---------|---------|
-| **Database** | snake_case | `created_at`, `user_type`, `from_user_id` |
-| **TypeScript** | camelCase | `createdAt`, `userType`, `fromUserId` |
-| **API Routes** | Plural kebab-case | `/api/trust-connections`, `/api/campaigns` |
-| **Components** | PascalCase | `UserCard.tsx`, `TrustNetwork.tsx` |
-| **Utilities** | camelCase | `calculateReputation.ts`, `auth-guard.ts` |
-| **Error Codes** | UPPER_SNAKE_CASE | `INSUFFICIENT_REPUTATION`, `INVALID_INPUT` |
-| **Loading States** | Literal types | `'idle' \| 'loading' \| 'success' \| 'error'` |
-| **Hooks** | camelCase with "use" | `useUserProfile.ts`, `useTrustNetwork.ts` |
-| **Project Structure** | By feature domain | `/profile`, `/campaigns`, `/api/trust-connections` |
+| Aspect                | Pattern              | Example                                            |
+| --------------------- | -------------------- | -------------------------------------------------- |
+| **Database**          | snake_case           | `created_at`, `user_type`, `from_user_id`          |
+| **TypeScript**        | camelCase            | `createdAt`, `userType`, `fromUserId`              |
+| **API Routes**        | Plural kebab-case    | `/api/trust-connections`, `/api/campaigns`         |
+| **Components**        | PascalCase           | `UserCard.tsx`, `TrustNetwork.tsx`                 |
+| **Utilities**         | camelCase            | `calculateReputation.ts`, `auth-guard.ts`          |
+| **Error Codes**       | UPPER_SNAKE_CASE     | `INSUFFICIENT_REPUTATION`, `INVALID_INPUT`         |
+| **Loading States**    | Literal types        | `'idle' \| 'loading' \| 'success' \| 'error'`      |
+| **Hooks**             | camelCase with "use" | `useUserProfile.ts`, `useTrustNetwork.ts`          |
+| **Project Structure** | By feature domain    | `/profile`, `/campaigns`, `/api/trust-connections` |
 
 ---
 
@@ -1542,6 +1560,7 @@ vox/
 ### Architectural Boundaries
 
 **API Boundaries:**
+
 - `/api/auth/` - Authentication (NextAuth managed)
 - `/api/trust-connections/` - Trust graph management
 - `/api/campaigns/` - Campaign CRUD and collaboration
@@ -1549,12 +1568,14 @@ vox/
 - `/api/reputation/` - Reputation calculations
 
 **Component Boundaries:**
+
 - **Page Components** (`app/`): Server Components, fetch data directly
 - **Feature Components** (`app/*/components/`): Feature-specific interactive UI
 - **Shared Components** (`components/`): Cross-feature reusable components
 - **UI Components** (`components/ui/`): Primitive, library-like components
 
 **Service Boundaries:**
+
 - **Auth Service** (`lib/auth/`): NextAuth configuration, session management
 - **Reputation Service** (`lib/reputation/`): Calculation, caching, queries
 - **Trust Graph Service** (`lib/trust-graph/`): Network queries, algorithms
@@ -1562,6 +1583,7 @@ vox/
 - **Database Service** (`lib/db.ts`): Prisma client singleton
 
 **Data Boundaries:**
+
 - **PostgreSQL**: Relational data (users, campaigns, collaborations)
 - **Trust Graph**: Edges stored as `trust_edges` table
 - **Reputation Scores**: Cached in `reputation_scores` table
@@ -1570,32 +1592,38 @@ vox/
 ### Requirements to Structure Mapping
 
 **User Management (FR1-5):**
+
 - Path: `app/profile/`, `app/(auth)/`
 - API: `/api/users/`, `/api/auth/`
 - Services: `lib/auth/`
 - Tests: `tests/unit/auth.test.ts`
 
 **Trust & Reputation System (FR6-12):**
+
 - Path: `app/profile/components/TrustNetwork.tsx`
 - API: `/api/trust-connections/`, `/api/reputation/`
 - Services: `lib/trust-graph/`, `lib/reputation/`
 - Tests: `tests/unit/trust-graph.test.ts`
 
 **Marketplace & Discovery (FR13-18):**
+
 - Path: `app/marketplace/`
 - API: `/api/campaigns/`
 - Tests: `tests/e2e/campaign-collaboration.spec.ts`
 
 **Verification & Community (FR24-28):**
+
 - Path: `app/marketplace/campaigns/[id]/`
 - Services: `lib/bot-detection/`
 
 **Admin & Support (FR29-33):**
+
 - Path: `app/admin/`
 
 ### Integration Points
 
 **Data Flow:**
+
 ```
 User Action (Form/Page)
     ↓
@@ -1613,6 +1641,7 @@ UI Updates via Page Revalidation
 ```
 
 **External Integrations:**
+
 - **NextAuth.js**: OAuth (Google, GitHub, Discord)
 - **Vercel**: Deployment, edge caching, environment variables
 - **PostgreSQL**: Persistent data storage
@@ -1625,17 +1654,17 @@ UI Updates via Page Revalidation
 
 ### Summary of Architectural Decisions
 
-| Component | Decision | Version |
-|-----------|----------|---------|
-| **Frontend Framework** | Next.js 16 (App Router) | Latest |
-| **Language** | TypeScript (strict mode) | 5.x |
-| **Styling** | Tailwind CSS v3 | Latest |
-| **Backend Runtime** | Node.js (Vercel Functions) | 18+ |
-| **Database** | PostgreSQL + Prisma | Latest |
-| **Authentication** | NextAuth.js | Latest |
-| **API Pattern** | REST + Server Components | Native |
-| **Caching** | Vercel Edge + Tag-based | Built-in |
-| **Deployment** | Vercel | Serverless |
+| Component              | Decision                   | Version    |
+| ---------------------- | -------------------------- | ---------- |
+| **Frontend Framework** | Next.js 16 (App Router)    | Latest     |
+| **Language**           | TypeScript (strict mode)   | 5.x        |
+| **Styling**            | Tailwind CSS v3            | Latest     |
+| **Backend Runtime**    | Node.js (Vercel Functions) | 18+        |
+| **Database**           | PostgreSQL + Prisma        | Latest     |
+| **Authentication**     | NextAuth.js                | Latest     |
+| **API Pattern**        | REST + Server Components   | Native     |
+| **Caching**            | Vercel Edge + Tag-based    | Built-in   |
+| **Deployment**         | Vercel                     | Serverless |
 
 ### Next Steps for Implementation
 
@@ -1669,6 +1698,7 @@ This architecture enables your team and AI agents to build vox consistently, wit
 ### Coherence Validation ✅
 
 **Decision Compatibility:** All 7 technology decisions work together without conflicts.
+
 - PostgreSQL + Graph Logic ↔ NextAuth.js: ✅ Fully compatible
 - REST API + Server Components ↔ Next.js 16: ✅ Perfect alignment
 - Prisma ORM ↔ PostgreSQL Schema: ✅ Excellent fit
@@ -1678,6 +1708,7 @@ This architecture enables your team and AI agents to build vox consistently, wit
 - Bot Detection Requirements ↔ Architecture: ✅ Supported with ML-ready patterns
 
 **Pattern Consistency:** All 6 pattern categories coherent and non-conflicting.
+
 - Database Naming (snake_case): ✅ Defined with examples
 - Application Naming (camelCase): ✅ Prisma mapping automatic
 - API Endpoints (plural kebab-case): ✅ 8+ endpoint patterns specified
@@ -1686,6 +1717,7 @@ This architecture enables your team and AI agents to build vox consistently, wit
 - Loading States (explicit types): ✅ `'idle' | 'loading' | 'success' | 'error'`
 
 **Structure Alignment:** Project structure fully supports all architectural decisions.
+
 - 80+ files/folders explicitly defined
 - All integration points specified
 - Clear data flow: UI → API → Services → Prisma → PostgreSQL → Cache
@@ -1700,12 +1732,14 @@ This architecture enables your team and AI agents to build vox consistently, wit
 **Functional Requirements: 33/33 COVERED**
 
 **User Management (FR1-5):** ✅ PASS
+
 - Registration & Authentication: NextAuth.js with OAuth + Credentials
 - Profile Creation: Server Components + API routes + Prisma User model
 - Settings Management: Dashboard routes + API endpoints
 - Account Deactivation: API mutation pattern supports this
 
 **Trust & Reputation System (FR6-12):** ✅ PASS
+
 - Trust Connections: REST API `/api/trust-connections/` + TrustEdge model
 - Trust Network Visualization: Server Component queries with relationship includes
 - Reputation Scoring: Materialized view + background jobs + cache invalidation
@@ -1713,22 +1747,26 @@ This architecture enables your team and AI agents to build vox consistently, wit
 - Achievement Badges: API endpoints + database schema prepared
 
 **Marketplace & Discovery (FR13-18):** ✅ PASS
+
 - Campaign Creation: REST POST `/api/campaigns/` with Campaign model
 - Influencer Search: Query patterns with reputation filtering
 - Reputation-based Ranking: Database queries using reputation_scores table
 - Collaboration Requests: REST API collaboration endpoints
 
 **Collaboration & Campaigns (FR19-23):** ✅ PASS
+
 - In-campaign Communication: API routes `/campaigns/:id/submit/`
 - Progress Tracking: Dashboard `/dashboard/collaborations/`
 - File Sharing: Architecture ready for S3 integration
 
 **Verification & Community (FR24-28):** ✅ PASS
+
 - Decentralized Voting: API endpoint `/campaigns/:id/vote/`
 - Account Reporting: Moderation endpoints + admin panel
 - Bot Detection: Service with ML-ready feature engineering
 
 **Administration & Support (FR29-33):** ✅ PASS
+
 - Admin Dashboard: Complete `/admin/` route group
 - User Suspension: API capability with authorization rules
 - Analytics & Support: Dashboard routes prepared
@@ -1790,6 +1828,7 @@ This architecture enables your team and AI agents to build vox consistently, wit
 **Pattern Completeness:** ✅ ZERO AMBIGUITY
 
 All 12 critical conflict points resolved with specific enforcement:
+
 1. ✅ Database naming: snake_case
 2. ✅ API endpoints: plural kebab-case
 3. ✅ Column naming: auto-mapped by Prisma
@@ -1839,6 +1878,7 @@ All 12 critical conflict points resolved with specific enforcement:
    - Timeline: Pre-production phase
 
 **Nice-to-Have Enhancements:**
+
 - Development workflow documentation (branching, PR process)
 - Monitoring & observability strategy (logging, error tracking)
 - Feature flags & A/B testing strategy
@@ -1850,12 +1890,14 @@ All 12 critical conflict points resolved with specific enforcement:
 ### Architecture Completeness Checklist
 
 **✅ Requirements Analysis**
+
 - [x] Project context thoroughly analyzed
 - [x] Scale and complexity assessed
 - [x] Technical constraints identified
 - [x] Cross-cutting concerns mapped
 
 **✅ Architectural Decisions**
+
 - [x] 5 Critical decisions documented with versions
 - [x] Technology stack fully specified
 - [x] Integration patterns defined
@@ -1863,6 +1905,7 @@ All 12 critical conflict points resolved with specific enforcement:
 - [x] Scalability path documented
 
 **✅ Implementation Patterns**
+
 - [x] Naming conventions established (snake_case, camelCase, PascalCase, kebab-case)
 - [x] Structure patterns defined (80+ files/folders)
 - [x] Communication patterns specified (REST API, Server Components, cache invalidation)
@@ -1870,12 +1913,14 @@ All 12 critical conflict points resolved with specific enforcement:
 - [x] All 12 conflict points resolved
 
 **✅ Project Structure**
+
 - [x] Complete directory structure defined
 - [x] Component boundaries established
 - [x] Integration points mapped
 - [x] Requirements to structure mapping complete
 
 **✅ Enforcement Guidelines**
+
 - [x] All AI agents given explicit rules
 - [x] Pattern violations clearly documented
 - [x] Examples provided for every pattern
@@ -1889,6 +1934,7 @@ All 12 critical conflict points resolved with specific enforcement:
 **Confidence Level:** HIGH (95%)
 
 **Key Strengths:**
+
 - Excellent technology alignment (all decisions support MVP and scale)
 - Complete pattern specification (zero ambiguity)
 - Clear requirements mapping (every FR/NFR has support)
@@ -1898,6 +1944,7 @@ All 12 critical conflict points resolved with specific enforcement:
 - Trust graph solution (balances MVP speed with scalability)
 
 **Areas for Future Enhancement:**
+
 - Detailed reputation algorithm formula (document before dev starts)
 - ML model serving architecture (Phase 2)
 - Accessibility implementation guide (Phase 1)
@@ -1907,6 +1954,7 @@ All 12 critical conflict points resolved with specific enforcement:
 **Implementation Handoff:**
 
 Your architecture is complete and ready for AI agents and developer teams to implement consistently. The document provides:
+
 - ✅ Clear technology choices with rationale
 - ✅ Explicit patterns for every component type
 - ✅ Complete project structure to follow
@@ -1930,4 +1978,3 @@ All architectural decisions validated for coherence, completeness, and implement
 ---
 
 **Architecture workflow complete! ✓**
-

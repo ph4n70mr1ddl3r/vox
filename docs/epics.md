@@ -12,11 +12,13 @@
 This document provides the complete epic and story breakdown for vox, decomposing the requirements from the [PRD](./prd.md) into implementable stories with full technical context from [Architecture](./architecture.md) and user experience patterns from [UX Design](./ux-design-specification.md).
 
 Each epic delivers incremental user value. Stories incorporate:
+
 - **WHAT to build** (from PRD functional requirements)
-- **HOW to build it** (from Architecture decisions)  
+- **HOW to build it** (from Architecture decisions)
 - **HOW users interact** (from UX patterns)
 
 **Epics Summary:**
+
 - **Epic 1:** Foundation & Core Infrastructure (enables all subsequent work)
 - **Epic 2:** User Authentication & Profile Management (users can join and build identity)
 - **Epic 3:** Trust Network & Reputation System (core differentiation - authentic connections)
@@ -30,6 +32,7 @@ Each epic delivers incremental user value. Stories incorporate:
 ## Functional Requirements Inventory
 
 ### User Management (5 FRs)
+
 - FR1: Users can register accounts with email verification
 - FR2: Users can log in securely using email and password
 - FR3: Users can update their profile information including bio and social links
@@ -37,6 +40,7 @@ Each epic delivers incremental user value. Stories incorporate:
 - FR5: Users can deactivate or delete their accounts
 
 ### Trust & Reputation System (7 FRs)
+
 - FR6: Users can search for and view other user profiles
 - FR7: Users can send trust connection requests to other users
 - FR8: Users can accept or reject incoming trust connection requests
@@ -46,6 +50,7 @@ Each epic delivers incremental user value. Stories incorporate:
 - FR12: Users can earn achievement badges for reputation milestones
 
 ### Marketplace & Discovery (6 FRs)
+
 - FR13: Brands can create and publish campaign opportunities
 - FR14: Influencers can browse and filter available campaigns by reputation requirements
 - FR15: System provides reputation-based influencer recommendations for brands
@@ -54,6 +59,7 @@ Each epic delivers incremental user value. Stories incorporate:
 - FR18: Users can search for influencers using reputation score filters
 
 ### Collaboration & Campaigns (5 FRs)
+
 - FR19: Brands and influencers can communicate within campaign contexts
 - FR20: Users can track collaboration progress and milestones
 - FR21: Brands can provide feedback on completed collaborations
@@ -61,6 +67,7 @@ Each epic delivers incremental user value. Stories incorporate:
 - FR23: System supports file sharing between collaborators
 
 ### Verification & Community (5 FRs)
+
 - FR24: Users can participate in decentralized voting on new user authenticity
 - FR25: Users can report suspicious accounts or content
 - FR26: Community moderators can review and resolve reported issues
@@ -68,6 +75,7 @@ Each epic delivers incremental user value. Stories incorporate:
 - FR28: Followers can provide feedback on influencer-brand partnerships
 
 ### Administration & Support (5 FRs)
+
 - FR29: Administrators can manage platform settings and configurations
 - FR30: Support staff can access user accounts for troubleshooting
 - FR31: Moderators can suspend or ban problematic accounts
@@ -79,6 +87,7 @@ Each epic delivers incremental user value. Stories incorporate:
 ## Epic Structure Design
 
 ### Epic 1: Foundation & Core Infrastructure
+
 **User Value:** Development team can build features on stable, scalable foundation
 **PRD Coverage:** Infrastructure for all FRs
 **Technical Context:** Next.js 16 + App Router, TypeScript, PostgreSQL + Prisma, Vercel deployment
@@ -86,6 +95,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** None (foundation epic)
 
 #### Stories:
+
 - **Story 1.1:** Set up Next.js 16 project with TypeScript and App Router
   - **Acceptance Criteria:** Project builds successfully, TypeScript strict mode enabled, App Router configured
   - **Technical Implementation:** `create-next-app` with TypeScript template, configure tsconfig.json
@@ -106,7 +116,8 @@ Each epic delivers incremental user value. Stories incorporate:
   - **Acceptance Criteria:** NextAuth.js configured, session management working, OAuth providers ready
   - **Technical Implementation:** NextAuth setup with Google/GitHub/Discord providers
 
-### Epic 2: User Authentication & Profile Management  
+### Epic 2: User Authentication & Profile Management
+
 **User Value:** Users can create accounts, log in, and manage their professional identity
 **PRD Coverage:** FR1, FR2, FR3, FR4, FR5
 **Technical Context:** NextAuth.js with OAuth + Credentials, User model with Prisma, session management
@@ -114,6 +125,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** Epic 1 (requires infrastructure)
 
 #### Stories:
+
 - **Story 2.1:** Implement user registration with email verification
   - **Acceptance Criteria:** Users can register, receive verification email, verify account
   - **Technical Implementation:** Registration API route, email service integration, verification tokens
@@ -135,6 +147,7 @@ Each epic delivers incremental user value. Stories incorporate:
   - **Technical Implementation:** Soft delete patterns, confirmation modals, data retention policies
 
 ### Epic 3: Trust Network & Reputation System
+
 **User Value:** Users build authentic connections and earn verifiable reputation (core differentiator)
 **PRD Coverage:** FR6, FR7, FR8, FR9, FR10, FR11, FR12
 **Technical Context:** TrustEdge model with recursive CTEs, reputation calculation with materialized views, tag-based cache invalidation
@@ -142,6 +155,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** Epic 2 (requires user profiles)
 
 #### Stories:
+
 - **Story 3.1:** Implement user search and profile viewing
   - **Acceptance Criteria:** Users can search for others, view profiles with reputation scores
   - **Technical Implementation:** Search API with filters, profile display components
@@ -163,6 +177,7 @@ Each epic delivers incremental user value. Stories incorporate:
   - **Technical Implementation:** Achievement model, badge display components, milestone tracking
 
 ### Epic 4: Marketplace & Campaign Discovery
+
 **User Value:** Brands discover verified influencers; influencers find relevant opportunities
 **PRD Coverage:** FR13, FR14, FR15, FR16, FR17, FR18
 **Technical Context:** Campaign model, reputation-based search queries, collaboration requests API
@@ -170,6 +185,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** Epic 3 (requires reputation system)
 
 #### Stories:
+
 - **Story 4.1:** Create campaign creation system for brands
   - **Acceptance Criteria:** Brands can create campaigns with requirements, budget, timeline
   - **Technical Implementation:** Campaign model, creation forms, validation rules
@@ -191,6 +207,7 @@ Each epic delivers incremental user value. Stories incorporate:
   - **Technical Implementation:** Advanced search API, filter components
 
 ### Epic 5: Collaboration & Campaign Execution
+
 **User Value:** Brands and influencers work together on campaigns with clear tracking
 **PRD Coverage:** FR19, FR20, FR21, FR22, FR23
 **Technical Context:** Collaboration model with status tracking, feedback system, file storage integration
@@ -198,6 +215,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** Epic 4 (requires campaigns and collaborations)
 
 #### Stories:
+
 - **Story 5.1:** Implement campaign communication system
   - **Acceptance Criteria:** Brands and influencers can message within campaign context
   - **Technical Implementation:** Message model, real-time updates, notification system
@@ -219,6 +237,7 @@ Each epic delivers incremental user value. Stories incorporate:
   - **Technical Implementation:** File upload system, storage integration, preview functionality
 
 ### Epic 6: Community Verification & Moderation
+
 **User Value:** Community prevents bots and maintains platform trust through decentralized verification
 **PRD Coverage:** FR24, FR25, FR26, FR27, FR28
 **Technical Context:** Voting system with reputation-weighted votes, reporting API, moderation dashboard
@@ -226,6 +245,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** Epic 3 (requires reputation for vote weighting)
 
 #### Stories:
+
 - **Story 6.1:** Implement decentralized user verification voting
   - **Acceptance Criteria:** Users can vote on new user authenticity with reputation-weighted votes
   - **Technical Implementation:** Voting system, reputation-based weighting, verification thresholds
@@ -247,6 +267,7 @@ Each epic delivers incremental user value. Stories incorporate:
   - **Technical Implementation:** Feedback collection, aggregation, display system
 
 ### Epic 7: Administration & Platform Management
+
 **User Value:** Administrators maintain platform health, support users, and monitor system performance
 **PRD Coverage:** FR29, FR30, FR31, FR32, FR33
 **Technical Context:** Admin panel with role-based access, analytics queries, support ticket system
@@ -254,6 +275,7 @@ Each epic delivers incremental user value. Stories incorporate:
 **Dependencies:** Epic 2 (requires user management foundation)
 
 #### Stories:
+
 - **Story 7.1:** Build platform configuration management
   - **Acceptance Criteria:** Administrators can manage platform settings and configurations
   - **Technical Implementation:** Configuration management system, admin settings interface
@@ -279,8 +301,9 @@ Each epic delivers incremental user value. Stories incorporate:
 ## Story Sequencing & Dependencies
 
 ### Critical Path (Must-Have Sequence)
+
 1. **Epic 1** → Foundation & Core Infrastructure
-2. **Epic 2** → User Authentication & Profile Management  
+2. **Epic 2** → User Authentication & Profile Management
 3. **Epic 3** → Trust Network & Reputation System
 4. **Epic 4** → Marketplace & Campaign Discovery
 5. **Epic 5** → Collaboration & Campaign Execution
@@ -288,21 +311,25 @@ Each epic delivers incremental user value. Stories incorporate:
 ### Development Phases
 
 **Phase 1: Core Platform (Epics 1-3)**
+
 - **Week 1-2:** Epic 1 (Foundation)
 - **Week 3-4:** Epic 2 (Authentication)
 - **Week 5-6:** Epic 3 (Trust Network)
 - **Deliverable:** Users can register, build trust networks, and earn reputation
 
 **Phase 2: Marketplace (Epics 4-5)**
+
 - **Week 7-8:** Epic 4 (Marketplace Discovery)
 - **Week 9-10:** Epic 5 (Collaboration Execution)
 - **Deliverable:** Brands and influencers can discover and collaborate on campaigns
 
 **Phase 3: Community & Administration (Epics 6-7)**
+
 - **Week 11-12:** Epic 6 (Community Verification)
 - **Week 13-14:** Epic 7 (Administration)
 
 ### Cross-Epic Dependencies
+
 - **All Epics** → Depend on Epic 1 (Foundation)
 - **Epic 3** → Requires Epic 2 (User profiles)
 - **Epic 4** → Requires Epic 3 (Reputation system)
@@ -311,9 +338,9 @@ Each epic delivers incremental user value. Stories incorporate:
 - **Epic 7** → Requires Epic 2 (User management)
 
 ### Risk Mitigation
+
 - **Epic 1** → No dependencies, lowest risk
 - **Epic 3** → Core differentiator, highest technical complexity
 - **Epic 6** → Community-driven, requires critical mass of users
 
 ---
-

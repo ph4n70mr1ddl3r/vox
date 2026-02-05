@@ -1,6 +1,11 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-inputDocuments: ["docs/analysis/product-brief-vox-2025-12-03.md", "docs/analysis/research/market-vox-reputation-platform-research-2025-12-04.md", "docs/analysis/brainstorming-session-2025-12-03.md"]
+inputDocuments:
+  [
+    'docs/analysis/product-brief-vox-2025-12-03.md',
+    'docs/analysis/research/market-vox-reputation-platform-research-2025-12-04.md',
+    'docs/analysis/brainstorming-session-2025-12-03.md',
+  ]
 workflowType: 'prd'
 lastStep: 11
 project_name: 'vox'
@@ -121,15 +126,16 @@ Riley helps users navigate vox, from onboarding new influencers to troubleshooti
 
 ### Journey Requirements Summary
 
-These journeys reveal core capabilities needed:  
-- Trust graph system for reputation building and network visualization  
-- Decentralized verification and voting mechanisms  
-- Reputation-based marketplace with dynamic pricing  
-- Real-time collaboration tracking and analytics  
-- Achievement and reward systems for engagement  
-- Moderation tools for community management  
-- Admin dashboards for system monitoring  
-- Support interfaces for user assistance  
+These journeys reveal core capabilities needed:
+
+- Trust graph system for reputation building and network visualization
+- Decentralized verification and voting mechanisms
+- Reputation-based marketplace with dynamic pricing
+- Real-time collaboration tracking and analytics
+- Achievement and reward systems for engagement
+- Moderation tools for community management
+- Admin dashboards for system monitoring
+- Support interfaces for user assistance
 - Onboarding flows for different user types
 
 ## Innovation & Novel Patterns
@@ -220,12 +226,14 @@ Vox is a web application built as a Multi-Page Application (MPA) to support SEO 
 ### MVP Feature Set (Phase 1)
 
 **Core User Journeys Supported:**
+
 - Sarah Chen (Brand): Discovery and campaign initiation with verified influencers
 - Alex Rivera (Influencer): Profile building and reputation earning through trust connections
 - Jamie Patel (Follower): Basic participation in verification and feedback
 - Community Moderator: Essential dispute resolution and bot detection
 
 **Must-Have Capabilities:**
+
 - Trust graph system with user registration and basic connection curation
 - Reputation-based influencer search and filtering for brands
 - Decentralized verification through community voting
@@ -235,6 +243,7 @@ Vox is a web application built as a Multi-Page Application (MPA) to support SEO 
 ### Post-MVP Features
 
 **Phase 2 (Growth - 3-6 months post-launch):**
+
 - Full gamification with achievement badges and rewards
 - Advanced analytics dashboards for brands and influencers
 - Mobile app for broader accessibility
@@ -242,6 +251,7 @@ Vox is a web application built as a Multi-Page Application (MPA) to support SEO 
 - Expanded user onboarding and support features
 
 **Phase 3 (Expansion - 6-12 months post-launch):**
+
 - AI-assisted matchmaking and campaign optimization
 - Enterprise integrations and API access
 - Multi-language support and global expansion
