@@ -105,7 +105,7 @@ export class CampaignFactory extends BaseFactory {
 
     async createCampaigns(count: number, options: CreateCampaignOptions): Promise<Campaign[]> {
         const results = await Promise.allSettled(
-            Array(count).fill(null).map(() => this.createCampaign(options))
+            Array.from({ length: count }, () => this.createCampaign(options))
         );
 
         const campaigns: Campaign[] = [];

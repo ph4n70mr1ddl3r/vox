@@ -26,7 +26,7 @@ test.describe('Marketplace Campaigns', () => {
 
         await page.fill('[data-testid="campaign-title"]', 'Summer Fashion Collection');
         await page.fill('[data-testid="campaign-description"]', 'Promoting our summer collection');
-        await page.fill('[data-testid="campaign-budget"]', String(DEFAULT_BUDGET));
+        await page.fill('[data-testid="campaign-budget"]', `${DEFAULT_BUDGET}`);
         await page.selectOption('[data-testid="campaign-category"]', 'fashion');
         await page.fill('[data-testid="min-reputation-score"]', '70');
         await page.fill('[data-testid="max-influencers"]', '10');

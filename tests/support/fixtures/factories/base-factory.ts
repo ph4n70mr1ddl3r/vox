@@ -31,13 +31,13 @@ export abstract class BaseFactory {
 
             if (!response.ok()) {
                 const errorText = await response.text();
-                const error = new Error(`${context} failed: ${response.status()} ${errorText}`);
-                Object.assign(error, { status: response.status() });
+                const error = new Error(`${context} failed: ${method} ${url} - ${response.status()} ${errorText}`);
+                Object.assign(error, { status: response.status(), url, method });
                 throw error;
             }
 
             return response.json() as Promise<T>;
-        }, context);
+        }, `${context} (${method} ${url})`);
     }
 
     async cleanup(resourceType: string, displayName?: string, timeoutMs: number = 30000): Promise<CleanupResult<string>> {

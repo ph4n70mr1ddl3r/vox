@@ -89,7 +89,7 @@ export class TrustConnectionFactory extends BaseFactory {
      */
     async acceptConnection(connectionId: string): Promise<TrustConnection> {
         try {
-            const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/accept`, {});
+            const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/accept`);
 
             if (!response.ok()) {
                 const errorText = await response.text();
@@ -107,7 +107,7 @@ export class TrustConnectionFactory extends BaseFactory {
 
     async rejectConnection(connectionId: string): Promise<TrustConnection> {
         try {
-            const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/reject`, {});
+            const response = await this.request.patch(`${this.baseURL}/trust-connections/${connectionId}/reject`);
 
             if (!response.ok()) {
                 const errorText = await response.text();

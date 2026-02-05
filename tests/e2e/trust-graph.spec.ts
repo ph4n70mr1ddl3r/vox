@@ -9,6 +9,18 @@ import { test, expect } from '../support/fixtures';
  * - Reputation score updates
  */
 
+async function fetchUser(userId: string, accessToken: string | undefined): Promise<{ reputationScore: number }> {
+    const response = await fetch(`${process.env.API_URL || 'http://localhost:3000/api'}/users/${userId}`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch user ${userId}: ${response.status}`);
+    }
+
+    return response.json() as Promise<{ reputationScore: number }>;
+}
+
 test.describe('Trust Graph Network', () => {
     test('should create trust connection and update reputation scores', async ({
         page,
@@ -50,7 +62,8 @@ test.describe('Trust Graph Network', () => {
         defaultPassword,
     }) => {
         const center = await userFactory.createInfluencer({ name: 'Center User' });
-        const connections = await userFactory.createUsers(5, { role: 'follower' });
+        const connectionCount = 5;
+        const connections = await userFactory.createUsers(connectionCount, { role: 'follower' });
 
         await trustConnectionFactory.createNetwork(
             center.id,
@@ -65,7 +78,7 @@ test.describe('Trust Graph Network', () => {
         await page.goto('/network');
 
         await expect(page.locator('[data-testid="trust-graph"]')).toBeVisible();
-        await expect(page.locator('[data-testid="network-nodes"]')).toHaveCount(6);
+        await expect(page.locator('[data-testid="network-nodes"]')).toHaveCount(connectionCount + 1);
     });
 
     test('should calculate reputation score after trust connection', async ({
@@ -83,10 +96,7 @@ test.describe('Trust Graph Network', () => {
 
         await trustConnectionFactory.acceptConnection(connection.id);
 
-        const getUserAResponse = await fetch(`${process.env.API_URL || 'http://localhost:3000/api'}/users/${userA.id}`, {
-            headers: { 'Authorization': `Bearer ${userA.accessToken}` }
-        });
-        const updatedUserA = await getUserAResponse.json() as { reputationScore: number };
+        const updatedUserA = await fetchUser(userA.id, userA.accessToken);
 
         expect(updatedUserA.reputationScore).toBeDefined();
         expect(typeof updatedUserA.reputationScore).toBe('number');
@@ -107,10 +117,7 @@ test.describe('Trust Graph Network', () => {
 
         await trustConnectionFactory.acceptConnection(connection.id);
 
-        const getLowRepUserResponse = await fetch(`${process.env.API_URL || 'http://localhost:3000/api'}/users/${lowRepUser.id}`, {
-            headers: { 'Authorization': `Bearer ${lowRepUser.accessToken}` }
-        });
-        const updatedLowRepUser = await getLowRepUserResponse.json() as { reputationScore: number };
+        const updatedLowRepUser = await fetchUser(lowRepUser.id, lowRepUser.accessToken);
 
         expect(updatedLowRepUser.reputationScore).toBeGreaterThanOrEqual(lowRepUser.reputationScore);
     });

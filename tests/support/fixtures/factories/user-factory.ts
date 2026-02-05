@@ -130,7 +130,7 @@ export class UserFactory extends BaseFactory {
             throw new Error(`User count must be positive, got ${count}`);
         }
 
-        return Promise.all(Array(count).fill(null).map(() => this.createUser(options)));
+        return Promise.all(Array.from({ length: count }, () => this.createUser(options)));
     }
 
     /**

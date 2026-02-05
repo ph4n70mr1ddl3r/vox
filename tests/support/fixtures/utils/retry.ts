@@ -24,7 +24,7 @@ export async function withRetry<T>(
             if (attempt < maxRetries) {
                 const isRetryable = error instanceof Error && (
                     isRetryableError(error) ||
-                    error.message.includes('status ')
+                    /\b\d{3}\b/.test(error.message)
                 );
 
                 if (!isRetryable) {
