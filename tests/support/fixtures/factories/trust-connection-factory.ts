@@ -1,17 +1,18 @@
 import { APIRequestContext } from '@playwright/test';
-import { DEFAULT_API_URL, DEFAULT_TRUST_LEVEL, NETWORK_TRUST_LEVEL, CONNECTION_STATUSES } from '../constants';
-import { cleanupResources, type CleanupResult } from '../utils/cleanup';
+import { DEFAULT_TRUST_LEVEL, NETWORK_TRUST_LEVEL, CONNECTION_STATUSES } from '../constants';
+import { BaseFactory } from './base-factory';
+import { type CleanupResult } from '../utils/cleanup';
 
 /**
  * Trust Connection Factory for vox trust graph testing
- * 
+ *
  * Creates test trust connections between users and automatically
  * tracks them for cleanup. Essential for testing:
  * - Trust network building
  * - Reputation score calculations
  * - Network distance queries
  * - Graph traversal algorithms
- * 
+ *
  * Auto-cleanup ensures test isolation.
  */
 
@@ -32,14 +33,9 @@ export interface TrustConnection {
     createdAt: string;
 }
 
-export class TrustConnectionFactory {
-    private request: APIRequestContext;
-    private createdConnectionIds: string[] = [];
-    private baseURL: string;
-
+export class TrustConnectionFactory extends BaseFactory {
     constructor(request: APIRequestContext) {
-        this.request = request;
-        this.baseURL = process.env.API_URL || DEFAULT_API_URL;
+        super(request);
     }
 
     /**
@@ -53,10 +49,16 @@ export class TrustConnectionFactory {
      * });
      */
     async createConnection(options: CreateConnectionOptions): Promise<TrustConnection> {
+        const trustLevel = options.trustLevel ?? DEFAULT_TRUST_LEVEL;
+
+        if (trustLevel < 1 || trustLevel > 100) {
+            throw new Error(`Trust level must be between 1 and 100, got ${trustLevel}`);
+        }
+
         const connectionData = {
             fromUserId: options.fromUserId,
             toUserId: options.toUserId,
-            trustLevel: options.trustLevel ?? DEFAULT_TRUST_LEVEL,
+            trustLevel,
             note: options.note || '',
         };
 
@@ -71,7 +73,7 @@ export class TrustConnectionFactory {
             }
 
             const connection = await response.json();
-            this.createdConnectionIds.push(connection.id);
+            this.trackId(connection.id);
 
             return connection;
         } catch (error) {
@@ -142,7 +144,34 @@ export class TrustConnectionFactory {
             )
         );
 
-        return Promise.all(connections.map((connection) => this.acceptConnection(connection.id)));
+        const acceptedConnections: TrustConnection[] = [];
+        const errors: Array<{ userId: string; error: string }> = [];
+
+        const acceptResults = await Promise.allSettled(
+            connections.map(async (connection) => {
+                return this.acceptConnection(connection.id);
+            })
+        );
+
+        acceptResults.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                acceptedConnections.push(result.value);
+            } else {
+                const errorMessage = result.reason instanceof Error
+                    ? result.reason.message
+                    : String(result.reason);
+                errors.push({ userId: connectedUserIds[index], error: errorMessage });
+            }
+        });
+
+        if (errors.length > 0) {
+            console.warn(`createNetwork: ${acceptedConnections.length} succeeded, ${errors.length} failed`);
+            errors.forEach(({ userId, error }) => {
+                console.warn(`  Connection to user ${userId} failed: ${error}`);
+            });
+        }
+
+        return acceptedConnections;
     }
 
     /**
@@ -155,19 +184,17 @@ export class TrustConnectionFactory {
      * ]);
      */
     async createChain(userIds: string[]): Promise<TrustConnection[]> {
-        const connectionPromises = [];
+        const connections = await Promise.all(
+            userIds.slice(0, -1).map((userId, index) =>
+                this.createConnection({
+                    fromUserId: userId,
+                    toUserId: userIds[index + 1],
+                    trustLevel: DEFAULT_TRUST_LEVEL,
+                })
+            )
+        );
 
-        for (let i = 0; i < userIds.length - 1; i++) {
-            const connection = await this.createConnection({
-                fromUserId: userIds[i],
-                toUserId: userIds[i + 1],
-                trustLevel: DEFAULT_TRUST_LEVEL,
-            });
-
-            connectionPromises.push(this.acceptConnection(connection.id));
-        }
-
-        return Promise.all(connectionPromises);
+        return Promise.all(connections.map((connection) => this.acceptConnection(connection.id)));
     }
 
     /**
@@ -175,17 +202,6 @@ export class TrustConnectionFactory {
      * Called automatically by fixture after test completion
      */
     async cleanup(): Promise<CleanupResult<string>> {
-        const result = await cleanupResources(
-            this.createdConnectionIds,
-            async (connectionId) => {
-                const response = await this.request.delete(`${this.baseURL}/trust-connections/${connectionId}`);
-                if (!response.ok()) {
-                    throw new Error(`Failed to delete trust connection ${connectionId}: ${response.status()} ${await response.text()}`);
-                }
-            },
-            'trust connection'
-        );
-        this.createdConnectionIds = [];
-        return result;
+        return super.cleanup('trust-connections');
     }
 }

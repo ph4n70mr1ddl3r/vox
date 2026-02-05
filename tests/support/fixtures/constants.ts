@@ -1,4 +1,4 @@
-export const DEFAULT_PASSWORD = 'password123';
+export const DEFAULT_PASSWORD = process.env.TEST_PASSWORD || 'SecureTestPass123!';
 
 export const DEFAULT_API_URL = 'http://localhost:3000/api';
 
@@ -21,6 +21,8 @@ export const CAMPAIGN_CATEGORIES = ['beauty', 'fashion', 'tech', 'food', 'fitnes
 export const CAMPAIGN_STATUSES = ['draft', 'active', 'completed', 'cancelled'] as const;
 
 export const USER_ROLES = ['brand', 'influencer', 'follower'] as const;
+
+export const DEFAULT_USER_ROLE = 'follower' as const;
 
 export const CONNECTION_STATUSES = ['pending', 'accepted', 'rejected'] as const;
 

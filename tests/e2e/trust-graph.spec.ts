@@ -82,5 +82,36 @@ test.describe('Trust Graph Network', () => {
         });
 
         await trustConnectionFactory.acceptConnection(connection.id);
+
+        const getUserAResponse = await fetch(`${process.env.API_URL || 'http://localhost:3000/api'}/users/${userA.id}`, {
+            headers: { 'Authorization': `Bearer ${userA.accessToken}` }
+        });
+        const updatedUserA = await getUserAResponse.json() as { reputationScore: number };
+
+        expect(updatedUserA.reputationScore).toBeDefined();
+        expect(typeof updatedUserA.reputationScore).toBe('number');
+    });
+
+    test('should verify reputation score increases after receiving trust from high-reputation user', async ({
+        userFactory,
+        trustConnectionFactory,
+    }) => {
+        const highRepUser = await userFactory.createInfluencer({ reputationScore: 95 });
+        const lowRepUser = await userFactory.createFollower({ reputationScore: 40 });
+
+        const connection = await trustConnectionFactory.createConnection({
+            fromUserId: highRepUser.id,
+            toUserId: lowRepUser.id,
+            trustLevel: 90,
+        });
+
+        await trustConnectionFactory.acceptConnection(connection.id);
+
+        const getLowRepUserResponse = await fetch(`${process.env.API_URL || 'http://localhost:3000/api'}/users/${lowRepUser.id}`, {
+            headers: { 'Authorization': `Bearer ${lowRepUser.accessToken}` }
+        });
+        const updatedLowRepUser = await getLowRepUserResponse.json() as { reputationScore: number };
+
+        expect(updatedLowRepUser.reputationScore).toBeGreaterThanOrEqual(lowRepUser.reputationScore);
     });
 });

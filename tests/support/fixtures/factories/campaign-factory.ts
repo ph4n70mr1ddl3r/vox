@@ -1,14 +1,15 @@
 import { APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { DEFAULT_API_URL, DEFAULT_MIN_REPUTATION_SCORE, DEFAULT_MAX_INFLUENCERS, CAMPAIGN_CATEGORIES, CAMPAIGN_STATUSES, CAMPAIGN_DEFAULT_DURATION_DAYS } from '../constants';
-import { cleanupResources, type CleanupResult } from '../utils/cleanup';
+import { DEFAULT_MIN_REPUTATION_SCORE, DEFAULT_MAX_INFLUENCERS, CAMPAIGN_CATEGORIES, CAMPAIGN_STATUSES, CAMPAIGN_DEFAULT_DURATION_DAYS } from '../constants';
+import { BaseFactory } from './base-factory';
+import { type CleanupResult } from '../utils/cleanup';
 
 /**
  * Campaign Factory for vox marketplace testing
- * 
+ *
  * Creates test campaigns with brand owners and automatically
  * tracks them for cleanup after test completion.
- * 
+ *
  * Supports:
  * - Campaign creation with customizable budgets
  * - Category and niche targeting
@@ -44,14 +45,9 @@ export interface Campaign {
     endDate: string;
 }
 
-export class CampaignFactory {
-    private request: APIRequestContext;
-    private createdCampaignIds: string[] = [];
-    private baseURL: string;
-
+export class CampaignFactory extends BaseFactory {
     constructor(request: APIRequestContext) {
-        this.request = request;
-        this.baseURL = process.env.API_URL || DEFAULT_API_URL;
+        super(request);
     }
 
     /**
@@ -66,11 +62,17 @@ export class CampaignFactory {
      * });
      */
     async createCampaign(options: CreateCampaignOptions): Promise<Campaign> {
+        const budget = options.budget ?? faker.number.int({ min: 1000, max: 50000 });
+
+        if (budget < 0) {
+            throw new Error(`Budget must be non-negative, got ${budget}`);
+        }
+
         const campaignData = {
             brandId: options.brandId,
             title: options.title || faker.company.catchPhrase(),
             description: options.description || faker.lorem.paragraph(),
-            budget: options.budget ?? faker.number.int({ min: 1000, max: 50000 }),
+            budget,
             category: options.category || faker.helpers.arrayElement(CAMPAIGN_CATEGORIES),
             niches: options.niches || [faker.word.adjective(), faker.word.noun()],
             minReputationScore: options.minReputationScore ?? DEFAULT_MIN_REPUTATION_SCORE,
@@ -90,7 +92,7 @@ export class CampaignFactory {
             }
 
             const campaign = await response.json();
-            this.createdCampaignIds.push(campaign.id);
+            this.trackId(campaign.id);
 
             return campaign;
         } catch (error) {
@@ -102,7 +104,32 @@ export class CampaignFactory {
     }
 
     async createCampaigns(count: number, options: CreateCampaignOptions): Promise<Campaign[]> {
-        return Promise.all(Array(count).fill(null).map(() => this.createCampaign(options)));
+        const results = await Promise.allSettled(
+            Array(count).fill(null).map(() => this.createCampaign(options))
+        );
+
+        const campaigns: Campaign[] = [];
+        const errors: Array<{ index: number; error: string }> = [];
+
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                campaigns.push(result.value);
+            } else {
+                const errorMessage = result.reason instanceof Error
+                    ? result.reason.message
+                    : String(result.reason);
+                errors.push({ index, error: errorMessage });
+            }
+        });
+
+        if (errors.length > 0) {
+            console.warn(`createCampaigns: ${campaigns.length} succeeded, ${errors.length} failed`);
+            errors.forEach(({ index, error }) => {
+                console.warn(`  Campaign ${index} failed: ${error}`);
+            });
+        }
+
+        return campaigns;
     }
 
     /**
@@ -133,17 +160,6 @@ export class CampaignFactory {
      * Called automatically by fixture after test completion
      */
     async cleanup(): Promise<CleanupResult<string>> {
-        const result = await cleanupResources(
-            this.createdCampaignIds,
-            async (campaignId) => {
-                const response = await this.request.delete(`${this.baseURL}/campaigns/${campaignId}`);
-                if (!response.ok()) {
-                    throw new Error(`Failed to delete campaign ${campaignId}: ${response.status()} ${await response.text()}`);
-                }
-            },
-            'campaign'
-        );
-        this.createdCampaignIds = [];
-        return result;
+        return super.cleanup('campaigns');
     }
 }

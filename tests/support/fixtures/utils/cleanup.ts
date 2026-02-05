@@ -7,11 +7,15 @@ export interface CleanupResult<T = string> {
 export async function cleanupResources<T>(
     resourceIds: T[],
     deleteFn: (id: T) => Promise<void>,
-    resourceType: string
+    resourceType: string,
+    timeoutMs: number = 30000
 ): Promise<CleanupResult<T>> {
     const results = await Promise.allSettled(
         resourceIds.map(async (id) => {
-            await deleteFn(id);
+            const timeoutPromise = new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error(`Cleanup timeout after ${timeoutMs}ms`)), timeoutMs)
+            );
+            await Promise.race([deleteFn(id), timeoutPromise]);
             return id;
         })
     );
@@ -24,7 +28,10 @@ export async function cleanupResources<T>(
         if (result.status === 'fulfilled') {
             deleted.push(id);
         } else {
-            failed.push({ id, error: result.reason.message });
+            const errorMessage = result.reason instanceof Error
+                ? result.reason.message
+                : String(result.reason);
+            failed.push({ id, error: errorMessage });
             console.warn(`Failed to delete ${resourceType} ${id}:`, result.reason);
         }
     });

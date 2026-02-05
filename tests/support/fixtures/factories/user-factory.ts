@@ -1,14 +1,15 @@
 import { APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { DEFAULT_PASSWORD, DEFAULT_API_URL, DEFAULT_REPUTATION_SCORE, USER_ROLES } from '../constants';
-import { cleanupResources, type CleanupResult } from '../utils/cleanup';
+import { DEFAULT_PASSWORD, DEFAULT_REPUTATION_SCORE, USER_ROLES, DEFAULT_USER_ROLE } from '../constants';
+import { BaseFactory } from './base-factory';
+import { type CleanupResult } from '../utils/cleanup';
 
 /**
  * User Factory for vox platform testing
- * 
+ *
  * Creates test users with different roles (brand, influencer, follower)
  * and automatically tracks them for cleanup after test completion.
- * 
+ *
  * Supports:
  * - Role-based user creation
  * - Reputation score initialization
@@ -42,14 +43,9 @@ export interface User {
     accessToken?: string;
 }
 
-export class UserFactory {
-    private request: APIRequestContext;
-    private createdUserIds: string[] = [];
-    private baseURL: string;
-
+export class UserFactory extends BaseFactory {
     constructor(request: APIRequestContext) {
-        this.request = request;
-        this.baseURL = process.env.API_URL || DEFAULT_API_URL;
+        super(request);
     }
 
     /**
@@ -68,7 +64,7 @@ export class UserFactory {
             email: options.email || faker.internet.email(),
             name: options.name || faker.person.fullName(),
             password,
-            role: options.role || USER_ROLES[2],
+            role: options.role || DEFAULT_USER_ROLE,
             reputationScore: options.reputationScore ?? DEFAULT_REPUTATION_SCORE,
             verified: options.verified ?? false,
             socialAccounts: options.socialAccounts || {},
@@ -85,7 +81,7 @@ export class UserFactory {
             }
 
             const user = await response.json();
-            this.createdUserIds.push(user.id);
+            this.trackId(user.id);
 
             const loginResponse = await this.request.post(`${this.baseURL}/auth/login`, {
                 data: { email: userData.email, password },
@@ -130,6 +126,10 @@ export class UserFactory {
     }
 
     async createUsers(count: number, options: CreateUserOptions = {}): Promise<User[]> {
+        if (count <= 0) {
+            throw new Error(`User count must be positive, got ${count}`);
+        }
+
         return Promise.all(Array(count).fill(null).map(() => this.createUser(options)));
     }
 
@@ -138,17 +138,6 @@ export class UserFactory {
      * Called automatically by fixture after test completion
      */
     async cleanup(): Promise<CleanupResult<string>> {
-        const result = await cleanupResources(
-            this.createdUserIds,
-            async (userId) => {
-                const response = await this.request.delete(`${this.baseURL}/users/${userId}`);
-                if (!response.ok()) {
-                    throw new Error(`Failed to delete user ${userId}: ${response.status()} ${await response.text()}`);
-                }
-            },
-            'user'
-        );
-        this.createdUserIds = [];
-        return result;
+        return super.cleanup('users');
     }
 }

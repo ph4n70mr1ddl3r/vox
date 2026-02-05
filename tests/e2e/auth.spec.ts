@@ -12,7 +12,6 @@ import { test, expect } from '../support/fixtures';
 test.describe('User Authentication', () => {
     test('should register and login a new user', async ({ page, userFactory, defaultPassword }) => {
         const user = await userFactory.createFollower({
-            email: 'test-user@example.com',
             name: 'Test User',
         });
 
