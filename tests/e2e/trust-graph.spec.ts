@@ -14,6 +14,7 @@ test.describe('Trust Graph Network', () => {
         page,
         userFactory,
         trustConnectionFactory,
+        defaultPassword,
     }) => {
         // Create two test users
         const influencer = await userFactory.createInfluencer({
@@ -29,7 +30,7 @@ test.describe('Trust Graph Network', () => {
         // Login as influencer
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', influencer.email);
-        await page.fill('[data-testid="password-input"]', 'password123');
+        await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
         // Navigate to brand profile
@@ -53,6 +54,7 @@ test.describe('Trust Graph Network', () => {
         page,
         userFactory,
         trustConnectionFactory,
+        defaultPassword,
     }) => {
         // Create a small trust network
         const center = await userFactory.createInfluencer({ name: 'Center User' });
@@ -67,7 +69,7 @@ test.describe('Trust Graph Network', () => {
         // Login and view network
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', center.email);
-        await page.fill('[data-testid="password-input"]', 'password123');
+        await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
         await page.goto('/network');

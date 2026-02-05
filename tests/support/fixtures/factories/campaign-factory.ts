@@ -1,6 +1,7 @@
 import { APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { User } from './user-factory';
+import { DEFAULT_API_URL, DEFAULT_BUDGET, DEFAULT_MIN_REPUTATION_SCORE, DEFAULT_MAX_INFLUENCERS, CAMPAIGN_CATEGORIES, CAMPAIGN_STATUSES, CAMPAIGN_DEFAULT_DURATION_DAYS } from '../constants';
 
 /**
  * Campaign Factory for vox marketplace testing
@@ -38,7 +39,7 @@ export interface Campaign {
     niches: string[];
     minReputationScore: number;
     maxInfluencers: number;
-    status: 'draft' | 'active' | 'completed' | 'cancelled';
+    status: typeof CAMPAIGN_STATUSES[number];
     startDate: string;
     endDate: string;
 }
@@ -50,7 +51,7 @@ export class CampaignFactory {
 
     constructor(request: APIRequestContext) {
         this.request = request;
-        this.baseURL = process.env.API_URL || 'http://localhost:3000/api';
+        this.baseURL = process.env.API_URL || DEFAULT_API_URL;
     }
 
     /**
@@ -70,12 +71,12 @@ export class CampaignFactory {
             title: options.title || faker.company.catchPhrase(),
             description: options.description || faker.lorem.paragraph(),
             budget: options.budget ?? faker.number.int({ min: 1000, max: 50000 }),
-            category: options.category || faker.helpers.arrayElement(['beauty', 'fashion', 'tech', 'food', 'fitness']),
+            category: options.category || faker.helpers.arrayElement(CAMPAIGN_CATEGORIES),
             niches: options.niches || [faker.word.adjective(), faker.word.noun()],
-            minReputationScore: options.minReputationScore ?? 50,
-            maxInfluencers: options.maxInfluencers ?? 10,
+            minReputationScore: options.minReputationScore ?? DEFAULT_MIN_REPUTATION_SCORE,
+            maxInfluencers: options.maxInfluencers ?? DEFAULT_MAX_INFLUENCERS,
             startDate: options.startDate || new Date(),
-            endDate: options.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            endDate: options.endDate || new Date(Date.now() + CAMPAIGN_DEFAULT_DURATION_DAYS * 24 * 60 * 60 * 1000),
         };
 
         try {
@@ -97,15 +98,8 @@ export class CampaignFactory {
         }
     }
 
-    /**
-     * Create multiple campaigns for a brand
-     */
     async createCampaigns(count: number, options: CreateCampaignOptions): Promise<Campaign[]> {
-        const campaigns: Campaign[] = [];
-        for (let i = 0; i < count; i++) {
-            campaigns.push(await this.createCampaign(options));
-        }
-        return campaigns;
+        return Promise.all(Array(count).fill(null).map(() => this.createCampaign(options)));
     }
 
     /**

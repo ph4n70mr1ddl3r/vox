@@ -1,4 +1,5 @@
 import { test, expect } from '../support/fixtures';
+import { DEFAULT_BUDGET } from '../support/fixtures/constants';
 
 /**
  * Example Test Suite: Marketplace Campaigns
@@ -10,7 +11,7 @@ import { test, expect } from '../support/fixtures';
  */
 
 test.describe('Marketplace Campaigns', () => {
-    test('should create a new campaign as a brand', async ({ page, userFactory, campaignFactory }) => {
+    test('should create a new campaign as a brand', async ({ page, userFactory, campaignFactory, defaultPassword }) => {
         // Create brand user
         const brand = await userFactory.createBrand({
             name: 'Fashion Brand',
@@ -20,7 +21,7 @@ test.describe('Marketplace Campaigns', () => {
         // Login as brand
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', brand.email);
-        await page.fill('[data-testid="password-input"]', 'password123');
+        await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
         // Navigate to campaign creation
@@ -29,7 +30,7 @@ test.describe('Marketplace Campaigns', () => {
         // Fill campaign form
         await page.fill('[data-testid="campaign-title"]', 'Summer Fashion Collection');
         await page.fill('[data-testid="campaign-description"]', 'Promoting our summer collection');
-        await page.fill('[data-testid="campaign-budget"]', '5000');
+        await page.fill('[data-testid="campaign-budget"]', String(DEFAULT_BUDGET));
         await page.selectOption('[data-testid="campaign-category"]', 'fashion');
         await page.fill('[data-testid="min-reputation-score"]', '70');
         await page.fill('[data-testid="max-influencers"]', '10');
@@ -50,6 +51,7 @@ test.describe('Marketplace Campaigns', () => {
         page,
         userFactory,
         campaignFactory,
+        defaultPassword,
     }) => {
         // Create brand and campaigns with different reputation requirements
         const brand = await userFactory.createBrand();
@@ -74,7 +76,7 @@ test.describe('Marketplace Campaigns', () => {
         // Login as influencer
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', influencer.email);
-        await page.fill('[data-testid="password-input"]', 'password123');
+        await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
         // Browse marketplace
@@ -91,6 +93,7 @@ test.describe('Marketplace Campaigns', () => {
         page,
         userFactory,
         campaignFactory,
+        defaultPassword,
     }) => {
         // Setup campaign
         const brand = await userFactory.createBrand();
@@ -108,7 +111,7 @@ test.describe('Marketplace Campaigns', () => {
         // Login as influencer
         await page.goto('/login');
         await page.fill('[data-testid="email-input"]', influencer.email);
-        await page.fill('[data-testid="password-input"]', 'password123');
+        await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
         // View campaign

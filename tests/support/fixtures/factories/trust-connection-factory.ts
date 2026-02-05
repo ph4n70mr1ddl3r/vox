@@ -1,5 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
 import { User } from './user-factory';
+import { DEFAULT_API_URL, DEFAULT_TRUST_LEVEL, NETWORK_TRUST_LEVEL, CONNECTION_STATUSES } from '../constants';
 
 /**
  * Trust Connection Factory for vox trust graph testing
@@ -27,7 +28,7 @@ export interface TrustConnection {
     toUserId: string;
     trustLevel: number;
     note?: string;
-    status: 'pending' | 'accepted' | 'rejected';
+    status: typeof CONNECTION_STATUSES[number];
     createdAt: string;
 }
 
@@ -38,7 +39,7 @@ export class TrustConnectionFactory {
 
     constructor(request: APIRequestContext) {
         this.request = request;
-        this.baseURL = process.env.API_URL || 'http://localhost:3000/api';
+        this.baseURL = process.env.API_URL || DEFAULT_API_URL;
     }
 
     /**
@@ -55,7 +56,7 @@ export class TrustConnectionFactory {
         const connectionData = {
             fromUserId: options.fromUserId,
             toUserId: options.toUserId,
-            trustLevel: options.trustLevel ?? 70, // Default trust level
+            trustLevel: options.trustLevel ?? DEFAULT_TRUST_LEVEL,
             note: options.note || '',
         };
 
@@ -115,21 +116,18 @@ export class TrustConnectionFactory {
      * );
      */
     async createNetwork(centerUserId: string, connectedUserIds: string[]): Promise<TrustConnection[]> {
-        const connections: TrustConnection[] = [];
-
-        for (const userId of connectedUserIds) {
+        const connectionPromises = connectedUserIds.map(async (userId) => {
             const connection = await this.createConnection({
                 fromUserId: centerUserId,
                 toUserId: userId,
-                trustLevel: 75,
+                trustLevel: NETWORK_TRUST_LEVEL,
             });
 
-            // Auto-accept for test networks
             await this.acceptConnection(connection.id);
-            connections.push(connection);
-        }
+            return connection;
+        });
 
-        return connections;
+        return Promise.all(connectionPromises);
     }
 
     /**
@@ -142,20 +140,20 @@ export class TrustConnectionFactory {
      * ]);
      */
     async createChain(userIds: string[]): Promise<TrustConnection[]> {
-        const connections: TrustConnection[] = [];
-
+        const connectionPromises = [];
         for (let i = 0; i < userIds.length - 1; i++) {
-            const connection = await this.createConnection({
+            const connectionPromise = this.createConnection({
                 fromUserId: userIds[i],
                 toUserId: userIds[i + 1],
-                trustLevel: 70,
+                trustLevel: DEFAULT_TRUST_LEVEL,
+            }).then(async (connection) => {
+                await this.acceptConnection(connection.id);
+                return connection;
             });
-
-            await this.acceptConnection(connection.id);
-            connections.push(connection);
+            connectionPromises.push(connectionPromise);
         }
 
-        return connections;
+        return Promise.all(connectionPromises);
     }
 
     /**

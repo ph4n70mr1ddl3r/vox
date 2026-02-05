@@ -1,5 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
 import { faker } from '@faker-js/faker';
+import { DEFAULT_PASSWORD, DEFAULT_API_URL, DEFAULT_REPUTATION_SCORE, USER_ROLES } from '../constants';
 
 /**
  * User Factory for vox platform testing
@@ -14,7 +15,7 @@ import { faker } from '@faker-js/faker';
  * - Auto-cleanup of created users
  */
 
-export type UserRole = 'brand' | 'influencer' | 'follower';
+export type UserRole = typeof USER_ROLES[number];
 
 export interface CreateUserOptions {
     role?: UserRole;
@@ -47,7 +48,7 @@ export class UserFactory {
 
     constructor(request: APIRequestContext) {
         this.request = request;
-        this.baseURL = process.env.API_URL || 'http://localhost:3000/api';
+        this.baseURL = process.env.API_URL || DEFAULT_API_URL;
     }
 
     /**
@@ -60,14 +61,14 @@ export class UserFactory {
      * });
      */
     async createUser(options: CreateUserOptions = {}): Promise<User> {
-        const password = options.password || faker.internet.password({ length: 12 });
+        const password = options.password || DEFAULT_PASSWORD;
 
         const userData = {
             email: options.email || faker.internet.email(),
             name: options.name || faker.person.fullName(),
             password,
-            role: options.role || 'follower',
-            reputationScore: options.reputationScore ?? 50, // Default neutral score
+            role: options.role || USER_ROLES[2],
+            reputationScore: options.reputationScore ?? DEFAULT_REPUTATION_SCORE,
             verified: options.verified ?? false,
             socialAccounts: options.socialAccounts || {},
         };
@@ -84,7 +85,6 @@ export class UserFactory {
             const user = await response.json();
             this.createdUserIds.push(user.id);
 
-            // Get access token for authenticated requests
             const loginResponse = await this.request.post(`${this.baseURL}/auth/login`, {
                 data: { email: userData.email, password },
             });
@@ -120,15 +120,8 @@ export class UserFactory {
         return this.createUser({ ...options, role: 'follower' });
     }
 
-    /**
-     * Create multiple users at once
-     */
     async createUsers(count: number, options: CreateUserOptions = {}): Promise<User[]> {
-        const users: User[] = [];
-        for (let i = 0; i < count; i++) {
-            users.push(await this.createUser(options));
-        }
-        return users;
+        return Promise.all(Array(count).fill(null).map(() => this.createUser(options)));
     }
 
     /**

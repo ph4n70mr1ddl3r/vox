@@ -10,7 +10,7 @@ import { test, expect } from '../support/fixtures';
  */
 
 test.describe('User Authentication', () => {
-    test('should register and login a new user', async ({ page, userFactory }) => {
+    test('should register and login a new user', async ({ page, userFactory, defaultPassword }) => {
         // Create test user
         const user = await userFactory.createFollower({
             email: 'test-user@example.com',
@@ -22,7 +22,7 @@ test.describe('User Authentication', () => {
 
         // Fill in credentials
         await page.fill('[data-testid="email-input"]', user.email);
-        await page.fill('[data-testid="password-input"]', 'password123');
+        await page.fill('[data-testid="password-input"]', defaultPassword);
         await page.click('[data-testid="login-button"]');
 
         // Assert successful login
